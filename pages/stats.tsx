@@ -12,33 +12,34 @@ import { useLocalStorage } from "../util/hooks/useLocalStorage";
 import { IModifier, IStatData, modifiers } from "../src/Modifiers";
 import axios from "axios";
 import html2canvas from "html2canvas";
+import { exportComponentAsPNG } from "react-component-export-image";
 
 const Stats: NextPage = () => {
   const [apiKey, setApiKey] = useLocalStorage("skan_api_key", "");
   const [currentSave, setCurrentSave] = useLocalStorage("current_save", "");
   const [lastSave, setLastSave] = useLocalStorage("last_save", "");
-  //const [statsData, setStatsData] = React.useState<IStatData[][]>([]);
-  const [statsData, setStatsData] = useLocalStorage("stats_data", []);
+  const [statsData, setStatsData] = React.useState<IStatData[][]>([]);
+  //const [statsData, setStatsData] = useLocalStorage("stats_data", []);
 
   const printRef = React.useRef();
 
-  //React.useEffect(() => {
-  //  if (apiKey === "" || currentSave === "") return;
-  //
-  //  const fetchStatsData = async () => {
-  //    const response = await axios.get(
-  //      `/api/modifiers?apiKey=${apiKey}&currentSave=${currentSave}${
-  //        lastSave !== "" ? `&lastSave=${lastSave}` : ``
-  //      }`
-  //    );
-  //    return await response.data;
-  //  };
-  //  fetchStatsData()
-  //    .then((data) => {
-  //      setStatsData(data);
-  //    })
-  //    .catch((error) => console.log(error));
-  //}, []);
+  React.useEffect(() => {
+    if (apiKey === "" || currentSave === "") return;
+
+    const fetchStatsData = async () => {
+      const response = await axios.get(
+        `/api/modifiers?apiKey=${apiKey}&currentSave=${currentSave}${
+          lastSave !== "" ? `&lastSave=${lastSave}` : ``
+        }`
+      );
+      return await response.data;
+    };
+    fetchStatsData()
+      .then((data) => {
+        setStatsData(data);
+      })
+      .catch((error) => console.log(error));
+  }, []);
 
   const handleDownloadImage = async () => {
     //@ts-ignore
@@ -81,13 +82,11 @@ const Stats: NextPage = () => {
         </Typography>
         <Box ref={printRef}>
           {statsData.map((stats: IStatData[], index: number) => (
-            <Box>
-              <Statistic
-                key={index}
-                modifier={modifiers[index]}
-                statData={stats}
-              ></Statistic>
-            </Box>
+            <Statistic
+              key={index}
+              modifier={modifiers[index]}
+              statData={stats}
+            ></Statistic>
           ))}
         </Box>
         <Box maxWidth="sm" margin={10}>

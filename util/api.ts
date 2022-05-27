@@ -48,6 +48,8 @@ export async function getAllStatsData(
                 "&country=" + country.tag
               )
             );
+            country.country =
+              country.country.length < 15 ? country.country : country.tag;
             country.flag = (
               await fetchData(
                 getQueryUrl(
