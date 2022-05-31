@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es6",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
@@ -16,6 +16,15 @@
     "jsxImportSource": "@emotion/react",
     "incremental": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules"]
+  "include": [
+    "next-env.d.ts",
+    "src",
+    "pages",
+    "util/hooks",
+    "components/ProTip.tsx",
+    "components/createEmotionCache.ts",
+    "components/theme.ts",
+    "components/Link.tsx"
+  ],
+  "exclude": ["**/node_modules", "node_modules"]
 }

@@ -1,8 +1,8 @@
 import * as React from "react";
 import Document, { Html, Head, Main, NextScript } from "next/document";
 import createEmotionServer from "@emotion/server/create-instance";
-import theme from "../src/theme";
-import createEmotionCache from "../src/createEmotionCache";
+import theme from "../components/theme";
+import createEmotionCache from "../components/createEmotionCache";
 
 export default class MyDocument extends Document {
   render() {
@@ -16,6 +16,8 @@ export default class MyDocument extends Document {
             rel="stylesheet"
             href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
           />
+          <link rel="stylesheet" href="/fonts/TrajanPro3-Bold.otf" />
+          <link rel="stylesheet" href="/fonts/Oswald-Medium.ttf" />
           {/* Inject MUI styles first to match with the prepend: true configuration. */}
           {(this.props as any).emotionStyleTags}
         </Head>
