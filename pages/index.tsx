@@ -9,6 +9,7 @@ import ProTip from "../components/ProTip";
 import Author from "../components/Author";
 import SkanApiKeyInput from "../components/SkanApiKeyInput";
 import SkanSaveSelect from "../components/SkanSaveSelect";
+import LogoSelect from "../components/LogoSelect";
 import { SelectChangeEvent } from "@mui/material";
 import { useLocalStorage } from "../util/hooks/useLocalStorage";
 
@@ -25,33 +26,21 @@ const Home: NextPage = () => {
 
   React.useEffect(() => {
     setError("");
-    const fetchData = async () => {
-      if (apiKey < 32) {
-        return "";
-      }
+    if (apiKey === "") return;
+    const fetchSaves = async () => {
       const res = await axios.get(`/api/saves?apiKey=${apiKey}`);
       return await res.data;
     };
-    fetchData().then((data) => {
-      if (apiKey < 32) {
-        setError("API Key should be at least 32 characters long");
+    fetchSaves()
+      .then((saves) => {
+        setAllSaves(saves);
+        setSavesLoaded(saves !== []);
+      })
+      .catch((error) => {
+        console.log(error);
+        setError(error.response.data.error);
         setSavesLoaded(false);
-        return;
-      } else if (error === "" && data && data.length > 10000) {
-        setError("API Key is invalid");
-        setSavesLoaded(false);
-        return;
-      }
-      const saves = data.filter((save: any) => {
-        const date = new Date(save.timestamp.split(" ")[0]);
-        return (
-          date.getFullYear() === new Date().getFullYear() &&
-          new Date().getMonth() - date.getMonth() < 3
-        );
       });
-      setAllSaves(saves);
-      setSavesLoaded(saves !== []);
-    });
   }, [apiKey]);
 
   const handleApiKeyChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -97,6 +86,8 @@ const Home: NextPage = () => {
             }
           />
         )}
+        {savesLoaded && <LogoSelect />}
+
         <Link href="/stats" color="secondary" sx={{ paddingTop: 5 }}>
           Load stats
         </Link>

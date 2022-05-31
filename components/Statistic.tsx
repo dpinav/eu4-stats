@@ -1,20 +1,27 @@
 import * as React from "react";
 import { styled } from "@mui/material/styles";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
 import TableCell, { tableCellClasses } from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
 import ArrowDropUpRoundedIcon from "@mui/icons-material/ArrowDropUpRounded";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import ArrowRightRoundedIcon from "@mui/icons-material/ArrowRightRounded";
-import { green, blue, red } from "@mui/material/colors";
-import { Avatar, Box, Card, CardMedia, Typography } from "@mui/material";
+import { green, blue, red, yellow, orange } from "@mui/material/colors";
+import {
+  Avatar,
+  Box,
+  Card,
+  CardContent,
+  CardMedia,
+  Paper,
+  Table,
+  TableBody,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
 import { useLocalStorage } from "../util/hooks/useLocalStorage";
 import { IStatData, IModifier } from "../src/Modifiers";
-import { exportComponentAsPNG } from "react-component-export-image";
+import { toPng } from "html-to-image";
 
 const StyledTableCell = styled(TableCell)(({ theme }: any) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -36,19 +43,92 @@ const StyledTableRow = styled(TableRow)(({ theme }: any) => ({
   },
 }));
 
-const Statistic = React.forwardRef(
-  (props: { modifier: IModifier; statData: IStatData[] }, ref) => {
-    const { modifier, statData } = props;
+const TypographyCell = styled(Typography)(({ theme }: any) => ({
+  fontFamily: "Oswald",
+}));
 
-    const printRef = React.useRef();
+const StatCard = styled(Card)(({ theme }: any) => ({
+  backgroundImage: `url(${"/images/backgroundStat.png"})`,
+  backgroundSize: "cover",
+  backgroundRepeat: "no-repeat",
+  backgroundColor: "none",
+  paddingLeft: 28,
+  paddingRight: 28,
+  "&:last-child": {
+    paddingBottom: 0,
+  },
+}));
+const Statistic = (props: { modifier: IModifier; statData: IStatData[] }) => {
+  const { modifier, statData } = props;
+  const [saveYear, setSaveYear] = useLocalStorage("save_year", "1444");
+  const [selectedLogo, setSelectedLogo] = useLocalStorage(
+    "selected_logo",
+    "logoEstrategas.png"
+  );
 
-    React.useEffect(() => {
-      console.log(statData);
-    }, []);
+  const printRef = React.useRef<HTMLDivElement>(null);
 
-    return (
-      //@ts-ignore
-      <div ref={ref}>
+  React.useEffect(() => {
+    console.log(statData);
+  }, []);
+
+  const onButtonClick = React.useCallback(() => {
+    if (printRef.current === null) {
+      return;
+    }
+
+    toPng(printRef.current, { cacheBust: true })
+      .then((dataUrl) => {
+        const link = document.createElement("a");
+        link.download = "my-image-name.png";
+        link.href = dataUrl;
+        link.click();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [printRef]);
+
+  return (
+    <>
+      <StatCard ref={printRef} elevation={6} square={true}>
+        <Box sx={{ display: "flex", paddingTop: 1 }}>
+          <CardMedia
+            component="img"
+            sx={{
+              marginRight: 1,
+              width: 140,
+              height: 140,
+            }}
+            image={"/images/" + selectedLogo}
+            alt="FC Logo"
+          />
+          <Box m={5}>
+            <Typography
+              variant="h4"
+              fontFamily={"Trajan Pro"}
+              fontWeight={"bold"}
+              sx={{ color: orange[300], textShadow: "1.5px 1.5px 1.5px black" }}
+            >
+              {saveYear}
+            </Typography>
+            <Typography
+              variant="h5"
+              component="h5"
+              gutterBottom
+              fontFamily={"Trajan Pro"}
+              fontStyle={"italic"}
+              fontWeight={"bold"}
+              sx={{
+                color: orange[300],
+                textAlign: "left",
+                textShadow: "1.5px 1.5px 1.5px black",
+              }}
+            >
+              {modifier.name.toUpperCase()}
+            </Typography>
+          </Box>
+        </Box>
         <TableContainer component={Paper} sx={{ marginBottom: 10 }}>
           <Table
             sx={{ minWidth: 600 }}
@@ -80,6 +160,7 @@ const Statistic = React.forwardRef(
                   <StyledTableCell component="th" scope="row">
                     <Card
                       elevation={0}
+                      square={true}
                       sx={{
                         display: "flex",
                         backgroundColor: "transparent",
@@ -87,52 +168,71 @@ const Statistic = React.forwardRef(
                         height: 20,
                       }}
                     >
-                      <Typography>{stat.country}</Typography>
-
                       <CardMedia
                         component="img"
                         sx={{
-                          marginLeft: 1,
+                          marginRight: 1,
                           width: 24,
                           height: 20,
                         }}
                         image={stat.flag}
                         alt={stat.country}
                       />
+                      <Typography>{stat.country}</Typography>
                     </Card>
                   </StyledTableCell>
                   <StyledTableCell>
                     <Typography>{stat.player}</Typography>
                   </StyledTableCell>
-                  <StyledTableCell align="right">{stat.value}</StyledTableCell>
-                  <StyledTableCell align="right" sx={{ paddingRight: 1 }}>
-                    {stat.change}
+                  <StyledTableCell align="right">
+                    <Typography>{stat.value}</Typography>
                   </StyledTableCell>
                   <StyledTableCell align="right" sx={{ paddingRight: 1 }}>
-                    {Math.round(stat.percentage * 100)}%
+                    <Typography>
+                      {stat.change > 0 ? "+" : ""}
+                      {stat.change}
+                    </Typography>
+                  </StyledTableCell>
+                  <StyledTableCell align="right" sx={{ paddingRight: 1 }}>
+                    <Typography>
+                      {stat.change >= 0 ? "+" : ""}
+                      {Math.round(stat.percentage * 100)}%
+                    </Typography>
                   </StyledTableCell>
                 </StyledTableRow>
               ))}
             </TableBody>
           </Table>
         </TableContainer>
-      </div>
-    );
-  }
-);
+      </StatCard>
+      <button onClick={onButtonClick}>Download</button>
+    </>
+  );
+};
 
 export default Statistic;
 
 function getTendencyIcon(tendency: number) {
   if (tendency > 0) {
     return (
-      <ArrowDropUpRoundedIcon fontSize="large" sx={{ color: green[600] }} />
+      <ArrowDropUpRoundedIcon
+        fontSize="large"
+        sx={{ color: green[600], marginTop: "5px" }}
+      />
     );
   } else if (tendency < 0) {
     return (
-      <ArrowDropDownRoundedIcon fontSize="large" sx={{ color: red[600] }} />
+      <ArrowDropDownRoundedIcon
+        fontSize="large"
+        sx={{ color: red[600], marginTop: "5px" }}
+      />
     );
   } else {
-    return <ArrowRightRoundedIcon fontSize="large" sx={{ color: blue[600] }} />;
+    return (
+      <ArrowRightRoundedIcon
+        fontSize="large"
+        sx={{ color: blue[600], marginTop: "4px" }}
+      />
+    );
   }
 }

@@ -6,6 +6,7 @@ import {
   FilledInput,
   useFormControl,
   FormHelperText,
+  Box,
 } from "@mui/material";
 
 type SkanApiKeyInputProps = {
@@ -20,16 +21,18 @@ const SkanApiKeyInput = ({
   onApiKeyChange,
 }: SkanApiKeyInputProps) => {
   return (
-    <FormControl sx={{ m: 1, width: 310 }} variant="filled">
-      <InputLabel htmlFor="skan-api-key">API Key</InputLabel>
-      <FilledInput
-        id="skan-api-key"
-        value={apiKey}
-        error={error !== ""}
-        onChange={onApiKeyChange}
-      />
-      <FormHelperText>{error}</FormHelperText>
-    </FormControl>
+    <Box>
+      <FormControl sx={{ m: 1, width: 310 }} variant="filled">
+        <InputLabel htmlFor="skan-api-key">API Key</InputLabel>
+        <FilledInput
+          id="skan-api-key"
+          value={apiKey}
+          error={error !== ""}
+          onChange={onApiKeyChange}
+        />
+        <FormHelperText>{error}</FormHelperText>
+      </FormControl>
+    </Box>
   );
 };
 

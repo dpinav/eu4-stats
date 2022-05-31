@@ -20,45 +20,53 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         error:
           "Missing required parameters apiKey, currentSave - lastSave is optional",
       });
-    }
-    const params = getQueryParamsModifiers();
-    const currentUrl = getQueryUrl(
-      apiKey,
-      currentSave,
-      "getCountryData",
-      params,
-      true
-    );
-    const currentData: any[] = Object.values(
-      await fetchData(currentUrl).catch((error) => {
-        res.status(500).json({ error: error });
-      })
-    );
-    let lastData;
-    if (lastSave) {
-      const lastUrl = getQueryUrl(
+    } else {
+      const params = getQueryParamsModifiers();
+      const currentUrl = getQueryUrl(
         apiKey,
-        lastSave,
+        currentSave,
         "getCountryData",
         params,
         true
       );
-      lastData = Object.values(
-        await fetchData(lastUrl).catch((error) => {
+      const currentData: any[] = Object.values(
+        await fetchData(currentUrl).catch((error) => {
           res.status(500).json({ error: error });
+          res.end();
+          return;
         })
       );
-    } else {
-      lastData = currentData;
+      let lastData;
+      if (lastSave) {
+        const lastUrl = getQueryUrl(
+          apiKey,
+          lastSave,
+          "getCountryData",
+          params,
+          true
+        );
+        lastData = Object.values(
+          await fetchData(lastUrl).catch((error) => {
+            res.status(500).json({ error: error });
+          })
+        );
+      } else {
+        lastData = currentData;
+      }
+      try {
+        const allStatsData = await getAllStatsData(
+          currentData,
+          lastData,
+          apiKey,
+          currentSave
+        );
+        res.status(200).json(allStatsData);
+      } catch (error) {
+        res.status(500).json({
+          error: "Something went wrong. Skanderbeg might not be available.",
+        });
+      }
     }
-
-    const allStatsData = await getAllStatsData(
-      currentData,
-      lastData,
-      apiKey,
-      currentSave
-    );
-    res.status(200).json(allStatsData);
   } else {
     res.status(400).json({ error: "Method not allowed" });
   }

@@ -13,10 +13,12 @@ export const getQueryUrl = (
   }${params}${playersOnly ? `&playersOnly=true` : ``}`;
 };
 
-export const fetchData = async (urlRequest: string) => {
+export const fetchData = async (urlRequest: string, type: string = "") => {
   const response = await axios.get(urlRequest);
   return await response.data;
 };
+
+export const fetchFlag = async (countryTag: string) => {};
 
 export function getQueryParamsModifiers(): string {
   let params = "&value=";
@@ -35,36 +37,30 @@ export async function getAllStatsData(
 ) {
   const allStatsData: IStatData[][] = [];
 
-  await Promise.all(
-    currentData.map(
-      async (element: []) =>
-        await Promise.all(
-          element.map(async (country: any) => {
-            country.country = await fetchData(
-              getQueryUrl(
-                apiKey,
-                currentSave,
-                "getCountryName",
-                "&country=" + country.tag
-              )
-            );
-            country.country =
-              country.country.length < 15 ? country.country : country.tag;
-            country.flag = (
-              await fetchData(
-                getQueryUrl(
-                  apiKey,
-                  currentSave,
-                  "getCountryFlag",
-                  "&country=" + country.tag
-                )
-              )
-            ).url;
-            console.log(country.country);
-          })
+  for (const element of currentData) {
+    for (const country of element) {
+      country.country = await fetchData(
+        getQueryUrl(
+          apiKey,
+          currentSave,
+          "getCountryName",
+          "&country=" + country.tag
         )
-    )
-  );
+      );
+      country.country =
+        country.country.length < 30 ? country.country : country.tag;
+      country.flag =
+        "data:image/png;base64," +
+        (await fetchData(
+          getQueryUrl(
+            apiKey,
+            currentSave,
+            "getCountryFlag",
+            "&country=" + country.tag + "&format=base64"
+          )
+        ));
+    }
+  }
 
   modifiers.forEach((modifier) => {
     allStatsData.push(getStatsData(currentData, lastData, modifier));
@@ -91,7 +87,7 @@ function getStatsData(
   const sortedLast = sortRawData(lastData, modifier);
 
   sortedLast.forEach((element: [], index) =>
-    element.forEach((country: any) => {
+    element?.forEach((country: any) => {
       const lastStatData = {
         position: index,
         tendency: 0,
@@ -110,12 +106,12 @@ function getStatsData(
   sortedCurrent.forEach((element: [], index) =>
     element.forEach((country: any) => {
       const lastStat = lastStatsData.find((e) => e.tag === country.tag) ?? {
-        position: sortedCurrent.length,
+        position: -1,
         value: parseInt(country[modifier.parameter]),
       };
       const currentStatData = {
         position: index,
-        tendency: lastStat.position - index,
+        tendency: lastStat.position >= 0 ? lastStat.position - index : 0,
         country: country.country,
         tag: country.tag,
         flag: country.flag,
