@@ -70,6 +70,9 @@ export async function getAllStatsData(
 
 function sortRawData(data: any[], modifier: IModifier) {
   return data.sort((a: any, b: any) => {
+    if (modifier.parameter === "army_professionalism") {
+      return b[0][modifier.parameter] * 100 - a[0][modifier.parameter] * 100;
+    }
     return (
       parseInt(b[0][modifier.parameter]) - parseInt(a[0][modifier.parameter])
     );
@@ -88,6 +91,9 @@ function getStatsData(
 
   sortedLast.forEach((element: [], index) =>
     element?.forEach((country: any) => {
+      if (modifier.parameter === "army_professionalism") {
+        country[modifier.parameter] *= 100;
+      }
       const lastStatData = {
         position: index,
         tendency: 0,
@@ -109,6 +115,10 @@ function getStatsData(
         position: -1,
         value: parseInt(country[modifier.parameter]),
       };
+
+      if (modifier.parameter === "army_professionalism") {
+        country[modifier.parameter] *= 100;
+      }
       const currentStatData = {
         position: index,
         tendency: lastStat.position >= 0 ? lastStat.position - index : 0,

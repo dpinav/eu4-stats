@@ -44,7 +44,7 @@ const StyledTableRow = styled(TableRow)(({ theme }: any) => ({
 }));
 
 const TypographyCell = styled(Typography)(({ theme }: any) => ({
-  fontFamily: "Oswald",
+  fontWeight: "bold",
 }));
 
 const StatCard = styled(Card)(({ theme }: any) => ({
@@ -182,22 +182,30 @@ const Statistic = (props: { modifier: IModifier; statData: IStatData[] }) => {
                     </Card>
                   </StyledTableCell>
                   <StyledTableCell>
-                    <Typography>{stat.player}</Typography>
+                    <TypographyCell>{stat.player}</TypographyCell>
                   </StyledTableCell>
                   <StyledTableCell align="right">
-                    <Typography>{stat.value}</Typography>
+                    <TypographyCell>{stat.value ?? 0}</TypographyCell>
                   </StyledTableCell>
                   <StyledTableCell align="right" sx={{ paddingRight: 1 }}>
                     <Typography>
                       {stat.change > 0 ? "+" : ""}
-                      {stat.change}
+                      {stat.change ?? 0}
                     </Typography>
                   </StyledTableCell>
-                  <StyledTableCell align="right" sx={{ paddingRight: 1 }}>
-                    <Typography>
+                  <StyledTableCell
+                    align="right"
+                    sx={{
+                      paddingRight: 1,
+                      backgroundColor: getPercentageColor(
+                        stat.percentage * 100
+                      ),
+                    }}
+                  >
+                    <TypographyCell>
                       {stat.change >= 0 ? "+" : ""}
                       {Math.round(stat.percentage * 100)}%
-                    </Typography>
+                    </TypographyCell>
                   </StyledTableCell>
                 </StyledTableRow>
               ))}
@@ -235,4 +243,29 @@ function getTendencyIcon(tendency: number) {
       />
     );
   }
+}
+
+function getPercentageColor(percentage: number) {
+  if (percentage >= 100) return green[900];
+  if (percentage > 90) return green[900];
+  if (percentage > 80) return green[800];
+  if (percentage > 70) return green[800];
+  if (percentage > 60) return green[600];
+  if (percentage > 50) return green[500];
+  if (percentage > 40) return green[400];
+  if (percentage > 30) return green[400];
+  if (percentage > 20) return green[300];
+  if (percentage > 10) return green[300];
+  if (percentage >= 0) return green[300];
+  if (percentage <= -100) return red[900];
+  if (percentage < -90) return red[900];
+  if (percentage < -80) return red[700];
+  if (percentage < -70) return red[600];
+  if (percentage < -60) return red[600];
+  if (percentage < -50) return red[500];
+  if (percentage < -40) return red[400];
+  if (percentage < -30) return red[300];
+  if (percentage < -20) return red[300];
+  if (percentage < -10) return red[300];
+  if (percentage < 0) return red[300];
 }
