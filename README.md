@@ -20,5 +20,5 @@ npm run dev
 ```
 
 Or access the preview website:
-
+https://eu4-stats.vercel.app/
 ---
