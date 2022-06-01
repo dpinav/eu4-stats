@@ -54,6 +54,7 @@ const StatCard = styled(Card)(({ theme }: any) => ({
   backgroundColor: "none",
   paddingLeft: 28,
   paddingRight: 28,
+  paddingBottom: 0,
   "&:last-child": {
     paddingBottom: 0,
   },
@@ -103,30 +104,48 @@ const Statistic = (props: { modifier: IModifier; statData: IStatData[] }) => {
             image={"/images/" + selectedLogo}
             alt="FC Logo"
           />
-          <Box m={5}>
-            <Typography
-              variant="h4"
-              fontFamily={"Trajan Pro"}
-              fontWeight={"bold"}
-              sx={{ color: orange[300], textShadow: "1.5px 1.5px 1.5px black" }}
-            >
-              {saveYear}
-            </Typography>
-            <Typography
-              variant="h5"
-              component="h5"
-              gutterBottom
-              fontFamily={"Trajan Pro"}
-              fontStyle={"italic"}
-              fontWeight={"bold"}
-              sx={{
-                color: orange[300],
-                textAlign: "left",
-                textShadow: "1.5px 1.5px 1.5px black",
-              }}
-            >
-              {modifier.name.toUpperCase()}
-            </Typography>
+          <Box display="flex" flexDirection="column" m={4}>
+            <Box display="flex">
+              <Typography
+                variant="h4"
+                fontFamily={"Trajan Pro"}
+                fontWeight={"bold"}
+                mr={2}
+                sx={{
+                  textShadow: "1.5px 1.5px 1.5px black",
+                }}
+              >
+                AÑO
+              </Typography>
+              <Typography
+                variant="h4"
+                fontFamily={"Trajan Pro"}
+                fontWeight={"bold"}
+                sx={{
+                  color: orange[300],
+                  textShadow: "1.5px 1.5px 1.5px black",
+                }}
+              >
+                {saveYear}
+              </Typography>
+            </Box>
+            <Box>
+              <Typography
+                variant="h5"
+                component="h5"
+                gutterBottom
+                fontFamily={"Trajan Pro"}
+                fontStyle={"italic"}
+                fontWeight={"bold"}
+                sx={{
+                  color: orange[300],
+                  textAlign: "left",
+                  textShadow: "1.5px 1.5px 1.5px black",
+                }}
+              >
+                {modifier.name.toUpperCase()}
+              </Typography>
+            </Box>
           </Box>
         </Box>
         <TableContainer component={Paper} sx={{ marginBottom: 10 }}>
@@ -137,13 +156,21 @@ const Statistic = (props: { modifier: IModifier; statData: IStatData[] }) => {
           >
             <TableHead>
               <TableRow>
-                <StyledTableCell sx={{ paddingLeft: 2 }}>#</StyledTableCell>
-                <StyledTableCell sx={{ paddingLeft: 1.5 }}>T</StyledTableCell>
+                <StyledTableCell sx={{ paddingLeft: 2, width: 0.02 }}>
+                  #
+                </StyledTableCell>
+                <StyledTableCell align="center" sx={{ width: 0.06 }}>
+                  T
+                </StyledTableCell>
                 <StyledTableCell>PAÍS</StyledTableCell>
                 <StyledTableCell>PLAYER</StyledTableCell>
-                <StyledTableCell align="right">VALOR</StyledTableCell>
-                <StyledTableCell align="right">CAMBIO</StyledTableCell>
-                <StyledTableCell align="right" sx={{ paddingRight: 2 }}>
+                <StyledTableCell align="center" sx={{ width: 0.15 }}>
+                  VALOR
+                </StyledTableCell>
+                <StyledTableCell align="center" sx={{ width: 0.15 }}>
+                  CAMBIO
+                </StyledTableCell>
+                <StyledTableCell align="center" sx={{ width: 0.1 }}>
                   %
                 </StyledTableCell>
               </TableRow>
@@ -154,7 +181,7 @@ const Statistic = (props: { modifier: IModifier; statData: IStatData[] }) => {
                   <StyledTableCell sx={{ paddingLeft: 2 }}>
                     {index + 1}
                   </StyledTableCell>
-                  <StyledTableCell>
+                  <StyledTableCell align="center">
                     {getTendencyIcon(stat.tendency)}
                   </StyledTableCell>
                   <StyledTableCell component="th" scope="row">
@@ -184,19 +211,18 @@ const Statistic = (props: { modifier: IModifier; statData: IStatData[] }) => {
                   <StyledTableCell>
                     <TypographyCell>{stat.player}</TypographyCell>
                   </StyledTableCell>
-                  <StyledTableCell align="right">
+                  <StyledTableCell align="center">
                     <TypographyCell>{stat.value ?? 0}</TypographyCell>
                   </StyledTableCell>
-                  <StyledTableCell align="right" sx={{ paddingRight: 1 }}>
+                  <StyledTableCell align="center">
                     <Typography>
                       {stat.change > 0 ? "+" : ""}
                       {stat.change ?? 0}
                     </Typography>
                   </StyledTableCell>
                   <StyledTableCell
-                    align="right"
+                    align="center"
                     sx={{
-                      paddingRight: 1,
                       backgroundColor: getPercentageColor(
                         stat.percentage * 100
                       ),
@@ -247,16 +273,17 @@ function getTendencyIcon(tendency: number) {
 
 function getPercentageColor(percentage: number) {
   if (percentage >= 100) return green[900];
-  if (percentage > 90) return green[900];
-  if (percentage > 80) return green[800];
-  if (percentage > 70) return green[800];
+  if (percentage > 90) return green[800];
+  if (percentage > 80) return green[700];
+  if (percentage > 70) return green[700];
   if (percentage > 60) return green[600];
   if (percentage > 50) return green[500];
-  if (percentage > 40) return green[400];
+  if (percentage > 40) return green[500];
   if (percentage > 30) return green[400];
   if (percentage > 20) return green[300];
   if (percentage > 10) return green[300];
-  if (percentage >= 0) return green[300];
+  if (percentage > 0) return green[200];
+  if (percentage == 0) return red[300];
   if (percentage <= -100) return red[900];
   if (percentage < -90) return red[900];
   if (percentage < -80) return red[700];

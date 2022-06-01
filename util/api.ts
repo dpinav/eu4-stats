@@ -48,7 +48,13 @@ export async function getAllStatsData(
         )
       );
       country.country =
-        country.country.length < 30 ? country.country : country.tag;
+        country.country.length < 20
+          ? country.country
+          : country.country.slice(0, 17) + "...";
+      country.player =
+        country.player.length < 20
+          ? country.player
+          : country.player.slice(0, 17) + "...";
       country.flag =
         "data:image/png;base64," +
         (await fetchData(
@@ -70,12 +76,10 @@ export async function getAllStatsData(
 
 function sortRawData(data: any[], modifier: IModifier) {
   return data.sort((a: any, b: any) => {
-    if (modifier.parameter === "army_professionalism") {
-      return b[0][modifier.parameter] * 100 - a[0][modifier.parameter] * 100;
-    }
-    return (
-      parseInt(b[0][modifier.parameter]) - parseInt(a[0][modifier.parameter])
-    );
+    //if (modifier.parameter === "army_professionalism") {
+    //  return b[0][modifier.parameter] * 100 - a[0][modifier.parameter] * 100;
+    //}
+    return b[0][modifier.parameter] - a[0][modifier.parameter];
   });
 }
 
@@ -86,14 +90,14 @@ function getStatsData(
 ): IStatData[] {
   const currentStatsData: IStatData[] = [];
   const lastStatsData: IStatData[] = [];
+
+  parseRawValues(currentData, modifier);
+  parseRawValues(lastData, modifier);
   const sortedCurrent = sortRawData(currentData, modifier);
   const sortedLast = sortRawData(lastData, modifier);
 
   sortedLast.forEach((element: [], index) =>
     element?.forEach((country: any) => {
-      if (modifier.parameter === "army_professionalism") {
-        country[modifier.parameter] *= 100;
-      }
       const lastStatData = {
         position: index,
         tendency: 0,
@@ -101,7 +105,7 @@ function getStatsData(
         tag: country.tag,
         flag: country.flag,
         player: country.player,
-        value: parseInt(country[modifier.parameter]),
+        value: country[modifier.parameter],
         change: 0,
         percentage: 0,
       };
@@ -111,14 +115,11 @@ function getStatsData(
 
   sortedCurrent.forEach((element: [], index) =>
     element.forEach((country: any) => {
-      const lastStat = lastStatsData.find((e) => e.tag === country.tag) ?? {
-        position: -1,
-        value: parseInt(country[modifier.parameter]),
-      };
-
-      if (modifier.parameter === "army_professionalism") {
-        country[modifier.parameter] *= 100;
-      }
+      const lastStat = lastStatsData.find((e) => e.tag === country.tag) ??
+        lastStatsData.find((e) => e.player === country.player) ?? {
+          position: -1,
+          value: country[modifier.parameter],
+        };
       const currentStatData = {
         position: index,
         tendency: lastStat.position >= 0 ? lastStat.position - index : 0,
@@ -127,13 +128,31 @@ function getStatsData(
         flag: country.flag,
         player: country.player,
         value: parseInt(country[modifier.parameter]),
-        change: parseInt(country[modifier.parameter]) - lastStat.value,
+        change: parseInt(
+          (country[modifier.parameter] - lastStat.value).toString()
+        ),
         percentage:
-          (parseInt(country[modifier.parameter]) - lastStat.value) /
-          lastStat.value,
+          (country[modifier.parameter] - lastStat.value) / lastStat.value,
       };
       currentStatsData.push(currentStatData);
     })
   );
   return currentStatsData;
+}
+
+function parseRawValues(statsData: any[], modifier: IModifier) {
+  statsData.forEach((element: [], index) =>
+    element?.forEach((country: any) => {
+      if (modifier.parameter === "army_professionalism") {
+        country[modifier.parameter] *= 100;
+        country[modifier.parameter] = parseFloat(
+          country[modifier.parameter]
+        ).toFixed(2);
+      } else if (modifier.parameter === "provinces") {
+        country[modifier.parameter] = parseInt(country[modifier.parameter]);
+      } else {
+        country[modifier.parameter] = parseInt(country[modifier.parameter]);
+      }
+    })
+  );
 }
