@@ -63,7 +63,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         res.status(200).json(allStatsData);
       } catch (error) {
         res.status(500).json({
-          error: "Something went wrong. Skanderbeg might not be available.",
+          error:
+            "Something went wrong. Skanderbeg might not be available. " + error,
         });
       }
     }

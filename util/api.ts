@@ -48,13 +48,13 @@ export async function getAllStatsData(
         )
       );
       country.country =
-        country.country.length < 20
+        country.country?.length < 20
           ? country.country
-          : country.country.slice(0, 17) + "...";
+          : country.country?.slice(0, 17) + "...";
       country.player =
-        country.player.length < 20
+        country.player?.length < 20
           ? country.player
-          : country.player.slice(0, 17) + "...";
+          : country.player?.slice(0, 17) + "...";
       country.flag =
         "data:image/png;base64," +
         (await fetchData(
