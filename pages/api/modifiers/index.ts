@@ -4,7 +4,7 @@ import {
   fetchData,
   getQueryParamsModifiers,
   getAllStatsData,
-} from "../../util/api";
+} from "../../../util/api";
 
 type parameters = {
   apiKey: string;

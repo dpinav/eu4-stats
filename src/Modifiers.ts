@@ -24,4 +24,6 @@ export const modifiers: IModifier[] = [
   { parameter: "buildings_value", name: "Valor de edificios" },
   { parameter: "army_professionalism", name: "Profesionalismo" },
   { parameter: "total_casualties", name: "Bajas totales sufridas" },
+  { parameter: "totalManaGainAverage", name: "Ganancia media de mana" },
+  { parameter: "ideas", name: "Ideas" },
 ];

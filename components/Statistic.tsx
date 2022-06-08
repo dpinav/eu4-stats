@@ -148,7 +148,10 @@ const Statistic = (props: { modifier: IModifier; statData: IStatData[] }) => {
             </Box>
           </Box>
         </Box>
-        <TableContainer component={Paper} sx={{ marginBottom: 10 }}>
+        <TableContainer
+          component={Paper}
+          sx={{ marginBottom: 10, boxShadow: "0 0 20px 4px black" }}
+        >
           <Table
             sx={{ minWidth: 600 }}
             aria-label="customized table"
