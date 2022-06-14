@@ -1,21 +1,6 @@
-export interface IModifier {
-  parameter: string;
-  name: string;
-}
+import IModifier from "../interfaces/IModifier";
 
-export interface IStatData {
-  position: number;
-  tendency: number;
-  country: string;
-  tag: string;
-  flag: string;
-  player: string;
-  value: number;
-  change: number;
-  percentage: number;
-}
-
-export const modifiers: IModifier[] = [
+export const getModifiers: Function = (): IModifier[] => [
   { parameter: "provinces", name: "Número de provincias" },
   { parameter: "total_development", name: "Desarrollo total" },
   { parameter: "spent_total", name: "Gasto total" },
@@ -26,4 +11,9 @@ export const modifiers: IModifier[] = [
   { parameter: "total_casualties", name: "Bajas totales sufridas" },
   { parameter: "totalManaGainAverage", name: "Ganancia media de mana" },
   { parameter: "ideas", name: "Ideas" },
+  { parameter: "max_manpower", name: "Manpower máximo" },
+  { parameter: "FL", name: "Forcelimit" },
+  { parameter: "qualityScore", name: "Calidad" },
+  { parameter: "manpower_recovery", name: "Recuperación de manpower" },
+  { parameter: "monthly_income", name: "Ingresos mensuales" },
 ];

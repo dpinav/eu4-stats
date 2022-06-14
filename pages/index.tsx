@@ -4,6 +4,7 @@ import type { NextPage } from "next";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import Link from "../components/Link";
 import ProTip from "../components/ProTip";
 import Author from "../components/Author";
@@ -38,7 +39,7 @@ const Home: NextPage = () => {
       })
       .catch((error) => {
         console.log(error);
-        setError(error.response.data.error);
+        setError(error?.response?.data?.error);
         setSavesLoaded(false);
       });
   }, [apiKey]);
@@ -61,19 +62,13 @@ const Home: NextPage = () => {
         <Typography variant="h5" component="h1" gutterBottom>
           Load your Skanderberg API key
         </Typography>
-        <SkanApiKeyInput
-          apiKey={apiKey}
-          error={error}
-          onApiKeyChange={handleApiKeyChange}
-        />
+        <SkanApiKeyInput apiKey={apiKey} error={error} onApiKeyChange={handleApiKeyChange} />
         {savesLoaded && (
           <SkanSaveSelect
             selectedSave={currentSave}
             allSaves={allSaves}
             isCurrentSave={true}
-            handleSaveSelect={(e: SelectChangeEvent<string>) =>
-              setCurrentSave(e.target.value)
-            }
+            handleSaveSelect={(e: SelectChangeEvent<string>) => setCurrentSave(e.target.value)}
           />
         )}
         {savesLoaded && (
@@ -81,16 +76,21 @@ const Home: NextPage = () => {
             selectedSave={lastSave}
             allSaves={allSaves}
             isCurrentSave={false}
-            handleSaveSelect={(e: SelectChangeEvent<string>) =>
-              setLastSave(e.target.value)
-            }
+            handleSaveSelect={(e: SelectChangeEvent<string>) => setLastSave(e.target.value)}
           />
         )}
         {savesLoaded && <LogoSelect />}
-
-        <Link href="/stats" color="secondary" sx={{ paddingTop: 5 }}>
-          Load stats
-        </Link>
+        {savesLoaded && (
+          <Button
+            variant="contained"
+            component={Link}
+            noLinkStyle
+            href="/stats"
+            sx={{ marginTop: 2 }}
+          >
+            Load stats
+          </Button>
+        )}
         <ProTip />
         <Author />
       </Box>

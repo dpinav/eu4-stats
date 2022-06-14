@@ -1,5 +1,7 @@
 import * as React from "react";
 import type { NextPage } from "next";
+import Alert from "@mui/material/Alert";
+import AlertTitle from "@mui/material/AlertTitle";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
@@ -11,23 +13,31 @@ import ProTip from "../components/ProTip";
 import Author from "../components/Author";
 import Statistic from "../components/Statistic";
 import { useLocalStorage } from "../util/hooks/useLocalStorage";
-import { IModifier, IStatData, modifiers } from "../src/Modifiers";
-import axios from "axios";
-import { toPng } from "html-to-image";
-import Alert from "@mui/material/Alert";
-import AlertTitle from "@mui/material/AlertTitle";
+import { fetchData } from "../util/api";
+import { toPng, toBlob } from "html-to-image";
+import createCountriesData from "../util/factories/countriesData";
+import { getModifiers } from "../util/factories/modifiers";
+import IModifier from "../util/interfaces/IModifier";
+import ICountryData from "../util/interfaces/ICountryData";
+import StatsNavBar from "../components/StatsNavBar";
+import JSZip from "jszip";
+import { saveAs } from "file-saver";
 
 const Stats: NextPage = () => {
   const [apiKey, setApiKey] = useLocalStorage("skan_api_key", "");
   const [currentSave, setCurrentSave] = useLocalStorage("current_save", "");
   const [lastSave, setLastSave] = useLocalStorage("last_save", "");
 
-  const [statsData, setStatsData] = React.useState<IStatData[][]>([]);
+  const [currentCountriesData, setCurrentCountriesData] = React.useState<ICountryData[]>([]);
+  const [lastCountriesData, setLastCountriesData] = React.useState<ICountryData[]>([]);
+
   const [error, setError] = React.useState<string>("");
   const [statsLoaded, setStatsLoaded] = React.useState<boolean>(false);
   //const [statsData, setStatsData] = useLocalStorage("stats_data", []);
 
   const printRef = React.useRef<HTMLDivElement>(null);
+
+  const modifiers: IModifier[] = getModifiers();
 
   React.useEffect(() => {
     if (apiKey === "" || currentSave === "") {
@@ -35,21 +45,22 @@ const Stats: NextPage = () => {
       return;
     }
 
-    const fetchStatsData = async () => {
-      const response = await axios.get(
-        `/api/modifiers?apiKey=${apiKey}&currentSave=${currentSave}${
-          lastSave !== "" ? `&lastSave=${lastSave}` : ``
-        }`
-      );
-      return await response.data;
-    };
-    fetchStatsData()
-      .then((data) => {
-        setStatsData(data);
-        setStatsLoaded(true);
+    fetchData(
+      `/api/modifiers?apiKey=${apiKey}&currentSave=${currentSave}${
+        lastSave !== "" ? `&lastSave=${lastSave}` : ``
+      }`
+    )
+      .then(({ currentRawData, lastRawData }) => {
+        createCountriesData(currentRawData, apiKey, currentSave).then((countriesData) => {
+          setCurrentCountriesData(countriesData);
+          setStatsLoaded(true);
+        });
+        createCountriesData(lastRawData, apiKey, lastSave).then((countriesData) =>
+          setLastCountriesData(countriesData)
+        );
       })
       .catch((error) => {
-        setError(error.response.data.error);
+        setError(error.response?.data.error);
         console.log(error);
       });
   }, []);
@@ -58,21 +69,25 @@ const Stats: NextPage = () => {
     if (printRef.current === null) {
       return;
     }
-
+    const zip = new JSZip();
     let index = 0;
     for (const element of printRef.current.children) {
       if (element.tagName !== "BUTTON") {
-        const dataUrl = await toPng(element as HTMLElement, {
+        const dataUrl = await toBlob(element as HTMLElement, {
           cacheBust: true,
         });
-        const link = document.createElement("a");
-        link.download = `${currentSave} ${modifiers[index].name}.png`;
-        link.href = dataUrl;
-        link.click();
-        link.remove();
+        zip.file(`${currentSave} ${modifiers[index].name}.png`, dataUrl);
         index++;
       }
     }
+    zip
+      .generateAsync({ type: "blob" })
+      .then((blob) => {
+        saveAs(blob, `${currentSave}.zip`);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }, [printRef]);
 
   return (
@@ -86,37 +101,24 @@ const Stats: NextPage = () => {
           alignItems: "center",
         }}
       >
-        <Typography variant="h4" component="h1" gutterBottom marginBottom={10}>
-          Stats
-        </Typography>
-        {statsLoaded && (
-          <Box maxWidth="sm" margin={10}>
-            <Button variant="contained" component={Link} noLinkStyle href="/">
-              Go to the home page
-            </Button>
-          </Box>
-        )}
+        <StatsNavBar
+          currentCountriesData={currentCountriesData}
+          lastCountriesData={lastCountriesData}
+          downloadImages={handleDownloadImage}
+          saveEditedCurrentData={setCurrentCountriesData}
+        ></StatsNavBar>
         <Box ref={printRef}>
-          {statsData.map((stats: IStatData[], index: number) => (
+          {modifiers.map((modifier: IModifier) => (
             <Statistic
-              key={index}
-              modifier={modifiers[index]}
-              statData={stats}
+              key={modifier.parameter}
+              modifier={modifier}
+              currentCountriesData={currentCountriesData}
+              lastCountriesData={lastCountriesData}
             ></Statistic>
           ))}
         </Box>
         {statsLoaded && (
           <>
-            <Box maxWidth="sm" margin={10}>
-              <Button variant="contained" onClick={handleDownloadImage}>
-                Download all as images
-              </Button>
-            </Box>
-            <Box maxWidth="sm" margin={10}>
-              <Button variant="contained" component={Link} noLinkStyle href="/">
-                Go to the home page
-              </Button>
-            </Box>
             <ProTip />
             <Author />
           </>
@@ -124,7 +126,7 @@ const Stats: NextPage = () => {
       </Box>
 
       <Backdrop
-        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        sx={{ color: "#fff", zIndex: (theme: any) => theme.zIndex.drawer + 1 }}
         open={!statsLoaded}
       >
         {error && (
@@ -132,11 +134,7 @@ const Stats: NextPage = () => {
             severity="error"
             variant="filled"
             action={
-              <Button
-                component={Link}
-                href="/"
-                sx={{ marginTop: "15%", marginLeft: "10%" }}
-              >
+              <Button component={Link} href="/" sx={{ marginTop: "15%", marginLeft: "10%" }}>
                 Return
               </Button>
             }
