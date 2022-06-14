@@ -1,10 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import {
-  getQueryUrl,
-  fetchData,
-  getQueryParamsModifiers,
-  getAllStatsData,
-} from "../../../util/api";
+import { getQueryUrl, fetchData, getQueryParamsModifiers } from "../../../util/api";
 
 type parameters = {
   apiKey: string;
@@ -17,58 +12,38 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     const { apiKey, currentSave, lastSave } = req.query as parameters;
     if (!apiKey || !currentSave) {
       res.status(400).json({
-        error:
-          "Missing required parameters apiKey, currentSave - lastSave is optional",
+        error: "Missing required parameters apiKey, currentSave - lastSave is optional",
       });
     } else {
       const params = getQueryParamsModifiers();
-      const currentUrl = getQueryUrl(
-        apiKey,
-        currentSave,
-        "getCountryData",
-        params,
-        true
-      );
-      const currentData: any[] = Object.values(
+      const currentUrl = getQueryUrl(apiKey, currentSave, "getCountryData", params, true);
+      const currentRawData: any[] = Object.values(
         await fetchData(currentUrl).catch((error) => {
-          res.status(500).json({ error: error });
+          res.status(500).json({
+            error: "Something went wrong. Skanderbeg might not be available. " + error,
+          });
           res.end();
           return;
         })
       );
-      let lastData;
+      let lastRawData;
       if (lastSave) {
-        const lastUrl = getQueryUrl(
-          apiKey,
-          lastSave,
-          "getCountryData",
-          params,
-          true
-        );
-        lastData = Object.values(
+        const lastUrl = getQueryUrl(apiKey, lastSave, "getCountryData", params, true);
+        lastRawData = Object.values(
           await fetchData(lastUrl).catch((error) => {
-            res.status(500).json({ error: error });
+            res.status(500).json({
+              error: "Something went wrong. Skanderbeg might not be available. " + error,
+            });
           })
         );
       } else {
-        lastData = currentData;
+        lastRawData = currentRawData;
       }
-      try {
-        const allStatsData = await getAllStatsData(
-          currentData,
-          lastData,
-          apiKey,
-          currentSave
-        );
-        res.status(200).json(allStatsData);
-      } catch (error) {
-        res.status(500).json({
-          error:
-            "Something went wrong. Skanderbeg might not be available. " + error,
-        });
-      }
+      res.status(200).json({ currentRawData, lastRawData });
+      res.end();
     }
   } else {
     res.status(400).json({ error: "Method not allowed" });
+    res.end();
   }
 };

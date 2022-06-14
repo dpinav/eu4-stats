@@ -1,5 +1,6 @@
 import axios from "axios";
-import { IModifier, IStatData, modifiers } from "../src/Modifiers";
+import { getModifiers } from "./factories/modifiers";
+import IModifier from "./interfaces/IModifier";
 
 export const getQueryUrl = (
   apiKey: string,
@@ -13,29 +14,28 @@ export const getQueryUrl = (
   }${params}${playersOnly ? `&playersOnly=true` : ``}`;
 };
 
-export const fetchData = async (urlRequest: string, type: string = "") => {
+export const fetchData = async (urlRequest: string) => {
   const response = await axios.get(urlRequest);
   return await response.data;
 };
 
-export const fetchFlag = async (countryTag: string) => {};
-
 export function getQueryParamsModifiers(): string {
   let params = "&value=";
-  modifiers.forEach((modifier) => {
+  getModifiers().forEach((modifier: IModifier) => {
     params += `${modifier.parameter};`;
   });
   params += "player;tag;";
   return params;
 }
 
+/*
 export async function getAllStatsData(
   currentData: any[],
   lastData: any[],
   apiKey: string,
   currentSave: string
 ) {
-  const allStatsData: IStatData[][] = [];
+  const allStatsData: ICountryData[][] = [];
 
   for (const element of currentData) {
     for (const country of element) {
@@ -87,9 +87,9 @@ function getStatsData(
   currentData: any[],
   lastData: any[],
   modifier: IModifier
-): IStatData[] {
-  const currentStatsData: IStatData[] = [];
-  const lastStatsData: IStatData[] = [];
+): ICountryData[] {
+  const currentStatsData: ICountryData[] = [];
+  const lastStatsData: ICountryData[] = [];
 
   parseRawValues(currentData, modifier);
   parseRawValues(lastData, modifier);
@@ -156,3 +156,4 @@ function parseRawValues(statsData: any[], modifier: IModifier) {
     })
   );
 }
+*/

@@ -16,18 +16,19 @@
     "@emotion/styled": "latest",
     "@mui/icons-material": "latest",
     "@mui/material": "latest",
-    "axios": "^0.27.2",
-    "html-to-image": "^1.9.0",
-    "image-downloader": "^4.3.0",
+    "axios": "latest",
+    "html-to-image": "latest",
+    "image-downloader": "latest",
     "next": "latest",
     "react": "latest",
     "react-dom": "latest"
   },
   "devDependencies": {
     "@types/node": "latest",
-    "@types/react": "^18.0.9",
-    "@types/react-dom": "^18.0.4",
-    "eslint": "^8.16.0",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "@types/material-ui": "latest",
+    "eslint": "latest",
     "eslint-config-next": "latest",
     "typescript": "latest"
   }
