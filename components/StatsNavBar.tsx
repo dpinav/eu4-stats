@@ -21,7 +21,7 @@ const StatsNavBar = (props: {
   saveEditedCurrentData: (currentCountriesData: ICountryData[]) => void;
 }) => {
   const { currentCountriesData, lastCountriesData, downloadImages, saveEditedCurrentData } = props;
-  const [isEditing, setIsEditing] = React.useState<Boolean>(false);
+  const [isEditing, setIsEditing] = React.useState<boolean>(false);
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="fixed">

@@ -8,9 +8,9 @@ import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 const EditData = (props: {
   currentCountriesData: ICountryData[];
   lastCountriesData: ICountryData[];
-  isEditing: Boolean;
+  isEditing: boolean;
   saveEditedCurrentData: (currentCountriesData: ICountryData[]) => void;
-  setIsEditing: (isEditing: Boolean) => any;
+  setIsEditing: (isEditing: boolean) => any;
 }) => {
   const {
     currentCountriesData,
