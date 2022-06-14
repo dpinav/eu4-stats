@@ -73,9 +73,9 @@ const Stats: NextPage = () => {
     let index = 0;
     for (const element of printRef.current.children) {
       if (element.tagName !== "BUTTON") {
-        const dataUrl = await toBlob(element as HTMLElement, {
+        const dataUrl: Blob = (await toBlob(element as HTMLElement, {
           cacheBust: true,
-        });
+        }))!;
         zip.file(`${currentSave} ${modifiers[index].name}.png`, dataUrl);
         index++;
       }
