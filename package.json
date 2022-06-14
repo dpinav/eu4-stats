@@ -24,10 +24,10 @@
     "react-dom": "latest"
   },
   "devDependencies": {
+    "@types/material-ui": "latest",
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
-    "@types/material-ui": "latest",
     "eslint": "latest",
     "eslint-config-next": "latest",
     "typescript": "latest"

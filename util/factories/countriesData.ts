@@ -27,7 +27,6 @@ async function initCountryData(rawCountryData: any, apiKey: string, save: string
     innovativeness: parseFloat(rawCountryData.innovativeness).toFixed(2),
     army_professionalism: (parseFloat(rawCountryData.army_professionalism) * 100).toFixed(2),
     totalManaGainAverage: parseFloat(rawCountryData.totalManaGainAverage).toFixed(2),
-    ideas: calculateIdeas(rawCountryData),
   };
 
   countryData.name = await fetchData(
@@ -37,15 +36,18 @@ async function initCountryData(rawCountryData: any, apiKey: string, save: string
     `/api/countryFlag/${countryData.tag}?apiKey=${apiKey}&save=${save}`
   );
 
+  countryData.ideas = 0; // parseInt("" + (await calculateIdeas(rawCountryData)));
   return countryData;
 }
 
-function calculateIdeas(rawData: any) {
+async function calculateIdeas(rawData: any) {
   let sum = 0;
-  let ideas = Object.values(rawData.ideas);
-  console.log("ideas: " + ideas);
-  for (let i = 1; i < ideas.length; i++) {
-    sum += parseFloat(rawData.ideas[i]);
+  if (rawData.ideas) {
+    let ideas = Object.values(rawData.ideas);
+    console.log("ideas: " + ideas);
+    for (let i = 1; i < ideas.length; i++) {
+      sum += parseFloat(rawData.ideas[i]);
+    }
   }
   return sum;
 }

@@ -10,14 +10,18 @@ import EditIcon from "@mui/icons-material/Edit";
 import ICountryData from "../util/interfaces/ICountryData";
 import Link from "../components/Link";
 import EditData from "./EditData";
+import { styled } from "@mui/material/styles";
+
+const Offset = styled("div")(({ theme }: any) => theme.mixins.toolbar);
 
 const StatsNavBar = (props: {
   currentCountriesData: ICountryData[];
   lastCountriesData: ICountryData[];
   downloadImages: () => Promise<void>;
+  saveEditedCurrentData: (currentCountriesData: ICountryData[]) => void;
 }) => {
-  const { currentCountriesData, lastCountriesData, downloadImages } = props;
-  const [isEditing, setIsEditing] = React.useState<boolean>(false);
+  const { currentCountriesData, lastCountriesData, downloadImages, saveEditedCurrentData } = props;
+  const [isEditing, setIsEditing] = React.useState<Boolean>(false);
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="fixed">
@@ -45,17 +49,20 @@ const StatsNavBar = (props: {
             edge="start"
             color="inherit"
             aria-label="Download As Images"
-            onClick={downloadImages}
+            onClick={() => downloadImages()}
             sx={{ mr: 2 }}
           >
             <DownloadIcon />
           </IconButton>
         </Toolbar>
       </AppBar>
+      <Offset />
       <EditData
         currentCountriesData={currentCountriesData}
         lastCountriesData={lastCountriesData}
         isEditing={isEditing}
+        saveEditedCurrentData={saveEditedCurrentData}
+        setIsEditing={setIsEditing}
       />
     </Box>
   );

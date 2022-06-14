@@ -14,12 +14,14 @@ import Author from "../components/Author";
 import Statistic from "../components/Statistic";
 import { useLocalStorage } from "../util/hooks/useLocalStorage";
 import { fetchData } from "../util/api";
-import { toPng } from "html-to-image";
+import { toPng, toBlob } from "html-to-image";
 import createCountriesData from "../util/factories/countriesData";
 import { getModifiers } from "../util/factories/modifiers";
 import IModifier from "../util/interfaces/IModifier";
 import ICountryData from "../util/interfaces/ICountryData";
 import StatsNavBar from "../components/StatsNavBar";
+import JSZip from "jszip";
+import { saveAs } from "file-saver";
 
 const Stats: NextPage = () => {
   const [apiKey, setApiKey] = useLocalStorage("skan_api_key", "");
@@ -67,21 +69,25 @@ const Stats: NextPage = () => {
     if (printRef.current === null) {
       return;
     }
-
+    const zip = new JSZip();
     let index = 0;
     for (const element of printRef.current.children) {
       if (element.tagName !== "BUTTON") {
-        const dataUrl = await toPng(element as HTMLElement, {
+        const dataUrl = await toBlob(element as HTMLElement, {
           cacheBust: true,
         });
-        const link = document.createElement("a");
-        link.download = `${currentSave} ${modifiers[index].name}.png`;
-        link.href = dataUrl;
-        link.click();
-        link.remove();
+        zip.file(`${currentSave} ${modifiers[index].name}.png`, dataUrl);
         index++;
       }
     }
+    zip
+      .generateAsync({ type: "blob" })
+      .then((blob) => {
+        saveAs(blob, `${currentSave}.zip`);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }, [printRef]);
 
   return (
@@ -99,6 +105,7 @@ const Stats: NextPage = () => {
           currentCountriesData={currentCountriesData}
           lastCountriesData={lastCountriesData}
           downloadImages={handleDownloadImage}
+          saveEditedCurrentData={setCurrentCountriesData}
         ></StatsNavBar>
         <Box ref={printRef}>
           {modifiers.map((modifier: IModifier) => (
@@ -112,16 +119,6 @@ const Stats: NextPage = () => {
         </Box>
         {statsLoaded && (
           <>
-            <Box maxWidth="sm" margin={10}>
-              <Button variant="contained" onClick={handleDownloadImage}>
-                Download all as images
-              </Button>
-            </Box>
-            <Box maxWidth="sm" margin={10}>
-              <Button variant="contained" component={Link} noLinkStyle href="/">
-                Go to the home page
-              </Button>
-            </Box>
             <ProTip />
             <Author />
           </>
