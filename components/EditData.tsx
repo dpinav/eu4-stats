@@ -62,6 +62,7 @@ const EditData = (props: {
             return (
               <Box key={index} sx={{ display: "flex", alignItems: "center" }}>
                 <CardMedia
+                  component="img"
                   sx={{ mr: 4, mt: 2, width: 28, height: 24 }}
                   image={countryData.flag}
                   alt={countryData.name ?? "Flag"}
