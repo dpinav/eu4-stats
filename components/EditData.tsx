@@ -54,9 +54,16 @@ const EditData = (props: {
 
   return (
     <Backdrop open={isEditing}>
-      <Box>
+      <Box sx={{ maxHeight: 0.8, overflow: "auto" }}>
         <Card
-          sx={{ display: "flex", flexDirection: "column", justifyContent: "flex-end", padding: 5 }}
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "flex-end",
+            width: "auto",
+            height: "auto",
+            padding: 5,
+          }}
         >
           {editableCountriesData.map((countryData, index) => {
             return (
