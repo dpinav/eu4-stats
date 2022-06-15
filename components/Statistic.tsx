@@ -6,6 +6,7 @@ import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import ArrowRightRoundedIcon from "@mui/icons-material/ArrowRightRounded";
 import { green, blue, red, yellow, orange } from "@mui/material/colors";
 import {
+  autocompleteClasses,
   Avatar,
   Box,
   Card,
@@ -53,12 +54,12 @@ const StatCard = styled(Card)(({ theme }: any) => ({
   backgroundSize: "cover",
   backgroundRepeat: "no-repeat",
   backgroundColor: "none",
+  width: "auto",
+  height: "auto",
+  overflow: "visible",
   paddingLeft: 28,
   paddingRight: 28,
-  paddingBottom: 0,
-  "&:last-child": {
-    paddingBottom: 0,
-  },
+  paddingBottom: 1,
 }));
 const Statistic = (props: {
   modifier: IModifier;
@@ -114,164 +115,167 @@ const Statistic = (props: {
 
   return (
     <>
-      <StatCard ref={printRef} elevation={6} square={true}>
-        <Box sx={{ display: "flex", paddingTop: 1 }}>
-          <CardMedia
-            component="img"
-            sx={{
-              marginRight: 1,
-              width: 140,
-              height: 140,
-            }}
-            image={"/images/" + selectedLogo}
-            alt="FC Logo"
-          />
-          <Box display="flex" flexDirection="column" m={4}>
-            <Box display="flex">
-              <Typography
-                variant="h4"
-                fontFamily={"Trajan Pro"}
-                fontWeight={"bold"}
-                mr={2}
-                sx={{
-                  textShadow: "1.5px 1.5px 1.5px black",
-                }}
-              >
-                AÑO
-              </Typography>
-              <Typography
-                variant="h4"
-                fontFamily={"Trajan Pro"}
-                fontWeight={"bold"}
-                sx={{
-                  color: orange[300],
-                  textShadow: "1.5px 1.5px 1.5px black",
-                }}
-              >
-                {saveYear}
-              </Typography>
-            </Box>
-            <Box>
-              <Typography
-                variant="h5"
-                component="h5"
-                gutterBottom
-                fontFamily={"Trajan Pro"}
-                fontStyle={"italic"}
-                fontWeight={"bold"}
-                sx={{
-                  color: orange[300],
-                  textAlign: "left",
-                  textShadow: "1.5px 1.5px 1.5px black",
-                }}
-              >
-                {modifier.name.toUpperCase()}
-              </Typography>
+      <Box ref={printRef} sx={{ overflow: "visible", width: "auto", height: "auto" }}>
+        <StatCard elevation={6} square={true}>
+          <Box sx={{ display: "flex", paddingTop: 1 }}>
+            <CardMedia
+              component="img"
+              sx={{
+                marginRight: 1,
+                width: 140,
+                height: 140,
+              }}
+              image={"/images/" + selectedLogo}
+              alt="FC Logo"
+            />
+            <Box display="flex" flexDirection="column" m={4}>
+              <Box display="flex">
+                <Typography
+                  variant="h4"
+                  fontFamily={"Trajan Pro"}
+                  fontWeight={"bold"}
+                  mr={2}
+                  sx={{
+                    textShadow: "1.5px 1.5px 1.5px black",
+                  }}
+                >
+                  AÑO
+                </Typography>
+                <Typography
+                  variant="h4"
+                  fontFamily={"Trajan Pro"}
+                  fontWeight={"bold"}
+                  sx={{
+                    color: orange[300],
+                    textShadow: "1.5px 1.5px 1.5px black",
+                  }}
+                >
+                  {saveYear}
+                </Typography>
+              </Box>
+              <Box>
+                <Typography
+                  variant="h5"
+                  component="h5"
+                  gutterBottom
+                  fontFamily={"Trajan Pro"}
+                  fontStyle={"italic"}
+                  fontWeight={"bold"}
+                  sx={{
+                    color: orange[300],
+                    textAlign: "left",
+                    textShadow: "1.5px 1.5px 1.5px black",
+                  }}
+                >
+                  {modifier.name.toUpperCase()}
+                </Typography>
+              </Box>
             </Box>
           </Box>
-        </Box>
-        <TableContainer
-          component={Paper}
-          sx={{ marginBottom: 10, boxShadow: "0 0 20px 4px black" }}
-        >
-          <Table sx={{ minWidth: 600 }} aria-label="customized table" padding="none">
-            <TableHead>
-              <TableRow>
-                <StyledTableCell sx={{ paddingLeft: 2, width: 0.02 }}>#</StyledTableCell>
-                <StyledTableCell align="center" sx={{ width: 0.06 }}>
-                  T
-                </StyledTableCell>
-                <StyledTableCell>PAÍS</StyledTableCell>
-                <StyledTableCell>PLAYER</StyledTableCell>
-                <StyledTableCell align="center" sx={{ width: 0.15 }}>
-                  VALOR
-                </StyledTableCell>
-                <StyledTableCell align="center" sx={{ width: 0.15 }}>
-                  CAMBIO
-                </StyledTableCell>
-                <StyledTableCell align="center" sx={{ width: 0.1 }}>
-                  %
-                </StyledTableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {sortedCurrentCountriesData.map((countryData, index) => {
-                const lastIndex: number = sortedLastCountriesData.findIndex(
-                  (e: ICountryData) =>
-                    e.tag === countryData.tag ||
-                    (e.player !== "undefined..." && e.player == countryData.player)
-                );
-                const value: number = countryData[
-                  modifier.parameter as keyof ICountryData
-                ] as number;
-                let lastValue: number = value;
-                if (lastIndex >= 0) {
-                  lastValue = sortedLastCountriesData[lastIndex][
+          <TableContainer
+            component={Paper}
+            sx={{ marginBottom: 10, boxShadow: "0 0 20px 4px black" }}
+          >
+            <Table sx={{ minWidth: 600 }} aria-label="customized table" padding="none">
+              <TableHead>
+                <TableRow>
+                  <StyledTableCell sx={{ paddingLeft: 2, width: 0.02 }}>#</StyledTableCell>
+                  <StyledTableCell align="center" sx={{ width: 0.06 }}>
+                    T
+                  </StyledTableCell>
+                  <StyledTableCell>PAÍS</StyledTableCell>
+                  <StyledTableCell>PLAYER</StyledTableCell>
+                  <StyledTableCell align="center" sx={{ width: 0.15 }}>
+                    VALOR
+                  </StyledTableCell>
+                  <StyledTableCell align="center" sx={{ width: 0.15 }}>
+                    CAMBIO
+                  </StyledTableCell>
+                  <StyledTableCell align="center" sx={{ width: 0.1 }}>
+                    %
+                  </StyledTableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {sortedCurrentCountriesData.map((countryData, index) => {
+                  const lastIndex: number = sortedLastCountriesData.findIndex(
+                    (e: ICountryData) =>
+                      e.tag === countryData.tag ||
+                      (e.player !== "undefined..." && e.player == countryData.player)
+                  );
+                  const value: number = countryData[
                     modifier.parameter as keyof ICountryData
                   ] as number;
-                }
-                const change: number = value - lastValue;
-                const percentage: number = (change / lastValue) * 100;
-                return (
-                  <StyledTableRow key={countryData.tag}>
-                    <StyledTableCell sx={{ paddingLeft: 2 }}>{index + 1}</StyledTableCell>
-                    <StyledTableCell align="center">
-                      {getTendencyIcon(index, lastIndex)}
-                    </StyledTableCell>
-                    <StyledTableCell component="th" scope="row">
-                      <Card
-                        elevation={0}
-                        square={true}
-                        sx={{
-                          display: "flex",
-                          backgroundColor: "transparent",
-                          alignItems: "center",
-                          height: 20,
-                        }}
-                      >
-                        <CardMedia
-                          component="img"
+                  let lastValue: number = value;
+                  if (lastIndex >= 0) {
+                    lastValue = sortedLastCountriesData[lastIndex][
+                      modifier.parameter as keyof ICountryData
+                    ] as number;
+                  }
+                  if (lastValue === 0) lastValue = value;
+                  const change: number = value - lastValue;
+                  const percentage: number = (change / lastValue) * 100;
+                  return (
+                    <StyledTableRow key={countryData.tag}>
+                      <StyledTableCell sx={{ paddingLeft: 2 }}>{index + 1}</StyledTableCell>
+                      <StyledTableCell align="center">
+                        {getTendencyIcon(index, lastIndex)}
+                      </StyledTableCell>
+                      <StyledTableCell component="th" scope="row">
+                        <Card
+                          elevation={0}
+                          square={true}
                           sx={{
-                            marginRight: 1,
-                            width: 24,
+                            display: "flex",
+                            backgroundColor: "transparent",
+                            alignItems: "center",
                             height: 20,
                           }}
-                          image={countryData.flag}
-                          alt="Flag"
-                        />
-                        <Typography>{countryData.name}</Typography>
-                      </Card>
-                    </StyledTableCell>
-                    <StyledTableCell>
-                      <TypographyCell>{countryData.player}</TypographyCell>
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      <TypographyCell>{value ?? 0}</TypographyCell>
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      <Typography>
-                        {change >= 0 ? "+" : ""}
-                        {isFloat(change) ? change.toFixed(2) : change}
-                      </Typography>
-                    </StyledTableCell>
-                    <StyledTableCell
-                      align="center"
-                      sx={{
-                        backgroundColor: getPercentageColor(percentage),
-                      }}
-                    >
-                      <TypographyCell>
-                        {percentage > 0 ? "+" + percentage.toFixed(0) : percentage.toFixed(0)}
-                        {"%"}
-                      </TypographyCell>
-                    </StyledTableCell>
-                  </StyledTableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </StatCard>
+                        >
+                          <CardMedia
+                            component="img"
+                            sx={{
+                              marginRight: 1,
+                              width: 24,
+                              height: 20,
+                            }}
+                            image={countryData.flag}
+                            alt="Flag"
+                          />
+                          <Typography>{countryData.name}</Typography>
+                        </Card>
+                      </StyledTableCell>
+                      <StyledTableCell>
+                        <TypographyCell>{countryData.player}</TypographyCell>
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        <TypographyCell>{value ?? 0}</TypographyCell>
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        <Typography>
+                          {change >= 0 ? "+" : ""}
+                          {isFloat(change) ? change.toFixed(2) : change}
+                        </Typography>
+                      </StyledTableCell>
+                      <StyledTableCell
+                        align="center"
+                        sx={{
+                          backgroundColor: getPercentageColor(percentage),
+                        }}
+                      >
+                        <TypographyCell>
+                          {percentage > 0 ? "+" + percentage.toFixed(0) : percentage.toFixed(0)}
+                          {"%"}
+                        </TypographyCell>
+                      </StyledTableCell>
+                    </StyledTableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </StatCard>
+      </Box>
       <button onClick={onButtonClick}>Download</button>
     </>
   );
