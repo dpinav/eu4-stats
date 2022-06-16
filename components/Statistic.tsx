@@ -1,16 +1,6 @@
-import * as React from "react";
-import { styled } from "@mui/material/styles";
-import TableCell, { tableCellClasses } from "@mui/material/TableCell";
-import ArrowDropUpRoundedIcon from "@mui/icons-material/ArrowDropUpRounded";
-import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
-import ArrowRightRoundedIcon from "@mui/icons-material/ArrowRightRounded";
-import { green, blue, red, yellow, orange } from "@mui/material/colors";
 import {
-  autocompleteClasses,
-  Avatar,
   Box,
   Card,
-  CardContent,
   CardMedia,
   Paper,
   Table,
@@ -20,10 +10,15 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
+import { orange } from "@mui/material/colors";
+import { styled } from "@mui/material/styles";
+import TableCell, { tableCellClasses } from "@mui/material/TableCell";
+import { toPng } from "html-to-image";
+import * as React from "react";
 import { useLocalStorage } from "../util/hooks/useLocalStorage";
 import ICountryData from "../util/interfaces/ICountryData";
 import IModifier from "../util/interfaces/IModifier";
-import { toPng } from "html-to-image";
+import StatisticRow from "./StatisticRow";
 
 const StyledTableCell = styled(TableCell)(({ theme }: any) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -33,20 +28,6 @@ const StyledTableCell = styled(TableCell)(({ theme }: any) => ({
   [`&.${tableCellClasses.body}`]: {
     fontSize: 14,
   },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }: any) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
-}));
-
-const TypographyCell = styled(Typography)(({ theme }: any) => ({
-  fontWeight: "bold",
 }));
 
 const StatCard = styled(Card)(({ theme }: any) => ({
@@ -199,80 +180,14 @@ const Statistic = (props: {
               </TableRow>
             </TableHead>
             <TableBody>
-              {sortedCurrentCountriesData.map((countryData, index) => {
-                const lastIndex: number = sortedLastCountriesData.findIndex(
-                  (e: ICountryData) =>
-                    e.tag === countryData.tag ||
-                    (e.player !== "undefined..." && e.player == countryData.player)
-                );
-                const value: number = countryData[
-                  modifier.parameter as keyof ICountryData
-                ] as number;
-                let lastValue: number = value;
-                if (lastIndex >= 0) {
-                  lastValue = sortedLastCountriesData[lastIndex][
-                    modifier.parameter as keyof ICountryData
-                  ] as number;
-                }
-                if (lastValue === 0) lastValue = value;
-                const change: number = value - lastValue;
-                const percentage: number = (change / lastValue) * 100;
-                return (
-                  <StyledTableRow key={countryData.tag}>
-                    <StyledTableCell sx={{ paddingLeft: 2 }}>{index + 1}</StyledTableCell>
-                    <StyledTableCell align="center">
-                      {getTendencyIcon(index, lastIndex)}
-                    </StyledTableCell>
-                    <StyledTableCell component="th" scope="row">
-                      <Card
-                        elevation={0}
-                        square={true}
-                        sx={{
-                          display: "flex",
-                          backgroundColor: "transparent",
-                          alignItems: "center",
-                          height: 20,
-                        }}
-                      >
-                        <CardMedia
-                          component="img"
-                          sx={{
-                            marginRight: 1,
-                            width: 24,
-                            height: 20,
-                          }}
-                          image={countryData.flag}
-                          alt="Flag"
-                        />
-                        <Typography>{countryData.name}</Typography>
-                      </Card>
-                    </StyledTableCell>
-                    <StyledTableCell>
-                      <TypographyCell>{countryData.player}</TypographyCell>
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      <TypographyCell>{value ?? 0}</TypographyCell>
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      <Typography>
-                        {change >= 0 ? "+" : ""}
-                        {isFloat(change) ? change.toFixed(2) : change}
-                      </Typography>
-                    </StyledTableCell>
-                    <StyledTableCell
-                      align="center"
-                      sx={{
-                        backgroundColor: getPercentageColor(percentage),
-                      }}
-                    >
-                      <TypographyCell>
-                        {percentage > 0 ? "+" + percentage.toFixed(0) : percentage.toFixed(0)}
-                        {"%"}
-                      </TypographyCell>
-                    </StyledTableCell>
-                  </StyledTableRow>
-                );
-              })}
+              {sortedCurrentCountriesData.map((countryData, index) => (
+                <StatisticRow
+                  countryData={countryData}
+                  index={index}
+                  modifier={modifier}
+                  sortedLastCountriesData={sortedLastCountriesData}
+                ></StatisticRow>
+              ))}
             </TableBody>
           </Table>
         </TableContainer>
@@ -283,44 +198,3 @@ const Statistic = (props: {
 };
 
 export default Statistic;
-
-function getTendencyIcon(currentIndex: number, lastIndex: number) {
-  if (currentIndex < lastIndex) {
-    return <ArrowDropUpRoundedIcon fontSize="large" sx={{ color: green[600], marginTop: "5px" }} />;
-  } else if (currentIndex > lastIndex) {
-    return <ArrowDropDownRoundedIcon fontSize="large" sx={{ color: red[600], marginTop: "5px" }} />;
-  } else {
-    return <ArrowRightRoundedIcon fontSize="large" sx={{ color: blue[600], marginTop: "4px" }} />;
-  }
-}
-
-function getPercentageColor(percentage: number) {
-  if (percentage >= 100) return green[900];
-  if (percentage > 90) return green[800];
-  if (percentage > 80) return green[700];
-  if (percentage > 70) return green[700];
-  if (percentage > 60) return green[600];
-  if (percentage > 50) return green[500];
-  if (percentage > 40) return green[500];
-  if (percentage > 30) return green[400];
-  if (percentage > 20) return green[300];
-  if (percentage > 10) return green[300];
-  if (percentage > 0) return green[200];
-  if (percentage == 0) return red[300];
-  if (percentage <= -100) return red[900];
-  if (percentage < -90) return red[900];
-  if (percentage < -80) return red[700];
-  if (percentage < -70) return red[600];
-  if (percentage < -60) return red[600];
-  if (percentage < -50) return red[500];
-  if (percentage < -40) return red[400];
-  if (percentage < -30) return red[300];
-  if (percentage < -20) return red[300];
-  if (percentage < -10) return red[300];
-  if (percentage < 0) return red[300];
-}
-
-function isFloat(n: number) {
-  return !isNaN(n) && n.toString().indexOf(".") != -1;
-  //return Number(n) === n && n % 1 !== 0;
-}
