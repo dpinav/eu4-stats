@@ -97,7 +97,11 @@ const StatisticRow = (props: {
         }}
       >
         <TypographyCell>
-          {percentage > 0 ? "+" + percentage.toFixed(0) : percentage.toFixed(0)}
+          {percentage > 0
+            ? "+" + percentage.toFixed(0)
+            : percentage === Infinity
+            ? "0"
+            : percentage.toFixed(0)}
           {"%"}
         </TypographyCell>
       </StyledTableCell>
