@@ -19,6 +19,7 @@ import { useLocalStorage } from "../util/hooks/useLocalStorage";
 import ICountryData from "../util/interfaces/ICountryData";
 import IModifier from "../util/interfaces/IModifier";
 import StatisticRow from "./StatisticRow";
+import { CountriesDataContext } from "../pages/stats";
 
 const StyledTableCell = styled(TableCell)(({ theme }: any) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -39,40 +40,30 @@ const StatCard = styled(Card)(({ theme }: any) => ({
   paddingRight: 28,
   paddingBottom: 1,
 }));
-const Statistic = (props: {
-  modifier: IModifier;
-  currentCountriesData: ICountryData[];
-  lastCountriesData: ICountryData[];
-}) => {
-  const { modifier, currentCountriesData, lastCountriesData } = props;
+const Statistic = (props: { modifier: IModifier }) => {
+  const { modifier } = props;
+  const [currentCountriesData, setCurrentCountriesData, lastCountriesData] =
+    React.useContext(CountriesDataContext);
   const [saveYear, setSaveYear] = useLocalStorage("save_year", "1444");
   const [selectedLogo, setSelectedLogo] = useLocalStorage("selected_logo", "logoEstrategas.png");
 
-  const [sortedCurrentCountriesData, setSortedCurrentCountriesData] = React.useState<
-    ICountryData[]
-  >([]);
-  const [sortedLastCountriesData, setSortedLastCountriesData] = React.useState<ICountryData[]>([]);
+  const sortedCurrentCountriesData = [
+    ...currentCountriesData.sort((a: ICountryData, b: ICountryData) => {
+      return (
+        (b[modifier.parameter as keyof ICountryData] as number) -
+        (a[modifier.parameter as keyof ICountryData] as number)
+      );
+    }),
+  ];
+  const sortedLastCountriesData = [
+    ...lastCountriesData.sort((a: ICountryData, b: ICountryData) => {
+      return (
+        (b[modifier.parameter as keyof ICountryData] as number) -
+        (a[modifier.parameter as keyof ICountryData] as number)
+      );
+    }),
+  ];
   const printRef = React.useRef<HTMLDivElement>(null);
-
-  React.useEffect(() => {
-    setSortedCurrentCountriesData([
-      ...currentCountriesData.sort((a: ICountryData, b: ICountryData) => {
-        return (
-          (b[modifier.parameter as keyof ICountryData] as number) -
-          (a[modifier.parameter as keyof ICountryData] as number)
-        );
-      }),
-    ]);
-
-    setSortedLastCountriesData([
-      ...lastCountriesData.sort((a: ICountryData, b: ICountryData) => {
-        return (
-          (b[modifier.parameter as keyof ICountryData] as number) -
-          (a[modifier.parameter as keyof ICountryData] as number)
-        );
-      }),
-    ]);
-  }, [currentCountriesData, lastCountriesData]);
 
   const onButtonClick = React.useCallback(() => {
     if (printRef.current === null) {
@@ -182,6 +173,7 @@ const Statistic = (props: {
             <TableBody>
               {sortedCurrentCountriesData.map((countryData, index) => (
                 <StatisticRow
+                  key={countryData.tag}
                   countryData={countryData}
                   index={index}
                   modifier={modifier}

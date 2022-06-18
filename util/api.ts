@@ -1,6 +1,9 @@
 import axios from "axios";
+import createCountriesData from "./factories/countriesData";
 import { getModifiers } from "./factories/modifiers";
+import { Fetcher } from "swr";
 import IModifier from "./interfaces/IModifier";
+import ICountryData from "./interfaces/ICountryData";
 
 export const getQueryUrl = (
   apiKey: string,
@@ -17,6 +20,27 @@ export const getQueryUrl = (
 export const fetchData = async (urlRequest: string) => {
   const response = await axios.get(urlRequest);
   return await response.data;
+};
+
+export const fetchCountriesData = async (
+  data: any,
+  apiKey: string,
+  currentSave: string,
+  lastSave: string
+) => {
+  const { currentRawData, lastRawData } = data;
+  const currentCountriesData: ICountryData[] = await createCountriesData(
+    currentRawData,
+    apiKey,
+    currentSave
+  );
+  const lastCountriesData: ICountryData[] = await createCountriesData(
+    lastRawData,
+    apiKey,
+    lastSave,
+    false
+  );
+  return { currentCountriesData, lastCountriesData };
 };
 
 export function getQueryParamsModifiers(): string {

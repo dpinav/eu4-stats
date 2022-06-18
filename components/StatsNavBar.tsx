@@ -14,13 +14,8 @@ import { styled } from "@mui/material/styles";
 
 const Offset = styled("div")(({ theme }: any) => theme.mixins.toolbar);
 
-const StatsNavBar = (props: {
-  currentCountriesData: ICountryData[];
-  lastCountriesData: ICountryData[];
-  downloadImages: () => Promise<void>;
-  saveEditedCurrentData: (currentCountriesData: ICountryData[]) => void;
-}) => {
-  const { currentCountriesData, lastCountriesData, downloadImages, saveEditedCurrentData } = props;
+const StatsNavBar = (props: { downloadImages: () => Promise<void> }) => {
+  const { downloadImages } = props;
   const [isEditing, setIsEditing] = React.useState<boolean>(false);
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -57,13 +52,7 @@ const StatsNavBar = (props: {
         </Toolbar>
       </AppBar>
       <Offset />
-      <EditData
-        currentCountriesData={currentCountriesData}
-        lastCountriesData={lastCountriesData}
-        isEditing={isEditing}
-        saveEditedCurrentData={saveEditedCurrentData}
-        setIsEditing={setIsEditing}
-      />
+      <EditData isEditing={isEditing} setIsEditing={setIsEditing} />
     </Box>
   );
 };
