@@ -4,19 +4,25 @@ import { fetchData } from "../api";
 export default async function createCountriesData(
   rawCountriesData: any[],
   apiKey: string,
-  save: string
+  save: string,
+  getFlagsAndNames: boolean = true
 ) {
   const countriesData: ICountryData[] = [];
   for (const element of rawCountriesData) {
     for (const country of element) {
-      countriesData.push(await initCountryData(country, apiKey, save));
+      countriesData.push(await initCountryData(country, apiKey, save, getFlagsAndNames));
     }
   }
 
   return countriesData;
 }
 
-async function initCountryData(rawCountryData: any, apiKey: string, save: string) {
+async function initCountryData(
+  rawCountryData: any,
+  apiKey: string,
+  save: string,
+  getFlagsAndNames: boolean
+) {
   const countryData: ICountryData = {
     ...rawCountryData,
     player:
@@ -28,13 +34,17 @@ async function initCountryData(rawCountryData: any, apiKey: string, save: string
     army_professionalism: (parseFloat(rawCountryData.army_professionalism) * 100).toFixed(2),
     totalManaGainAverage: parseFloat(rawCountryData.totalManaGainAverage).toFixed(2),
   };
-
-  countryData.name = await fetchData(
-    `/api/countryName/${countryData.tag}?apiKey=${apiKey}&save=${save}`
-  );
-  countryData.flag = await fetchData(
-    `/api/countryFlag/${countryData.tag}?apiKey=${apiKey}&save=${save}`
-  );
+  if (getFlagsAndNames) {
+    countryData.name = await fetchData(
+      `/api/countryName/${countryData.tag}?apiKey=${apiKey}&save=${save}`
+    );
+    countryData.flag = await fetchData(
+      `/api/countryFlag/${countryData.tag}?apiKey=${apiKey}&save=${save}`
+    );
+  } else {
+    countryData.name = "noname";
+    countryData.flag = "noflag";
+  }
 
   countryData.ideas = 0; // parseInt("" + (await calculateIdeas(rawCountryData)));
   return countryData;

@@ -4,25 +4,13 @@ import ICountryData from "../util/interfaces/ICountryData";
 import Box from "@mui/material/Box";
 import { Backdrop, Button, CardMedia, IconButton, TextField, Typography } from "@mui/material";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import { CountriesDataContext } from "../pages/stats";
 
-const EditData = (props: {
-  currentCountriesData: ICountryData[];
-  lastCountriesData: ICountryData[];
-  isEditing: boolean;
-  saveEditedCurrentData: (currentCountriesData: ICountryData[]) => void;
-  setIsEditing: (isEditing: boolean) => any;
-}) => {
-  const {
-    currentCountriesData,
-    lastCountriesData,
-    isEditing,
-    saveEditedCurrentData,
-    setIsEditing,
-  } = props;
+const EditData = (props: { isEditing: boolean; setIsEditing: (isEditing: boolean) => any }) => {
+  const { isEditing, setIsEditing } = props;
+  const [currentCountriesData, setCurrentCountriesData] = React.useContext(CountriesDataContext);
 
-  const [editableCountriesData, setEditableCountriesData] = React.useState<ICountryData[]>([
-    ...currentCountriesData,
-  ]);
+  const [editableCountriesData, setEditableCountriesData] = React.useState<ICountryData[]>([]);
 
   React.useEffect(() => {
     setEditableCountriesData([...currentCountriesData]);
@@ -43,7 +31,7 @@ const EditData = (props: {
   };
 
   const handleSave = () => {
-    saveEditedCurrentData([...editableCountriesData]);
+    setCurrentCountriesData([...editableCountriesData]);
     setIsEditing(false);
   };
 

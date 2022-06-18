@@ -35,7 +35,7 @@ const Home: NextPage = () => {
     fetchSaves()
       .then((saves) => {
         setAllSaves(saves);
-        setSavesLoaded(saves !== []);
+        setSavesLoaded(saves.length > 0);
       })
       .catch((error) => {
         console.log(error);
