@@ -20,6 +20,7 @@ import ICountryData from "../util/interfaces/ICountryData";
 import IModifier from "../util/interfaces/IModifier";
 import StatisticRow from "./StatisticRow";
 import { CountriesDataContext } from "../pages/stats";
+import { saveAs } from "file-saver";
 
 const StyledTableCell = styled(TableCell)(({ theme }: any) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -69,13 +70,9 @@ const Statistic = (props: { modifier: IModifier }) => {
     if (printRef.current === null) {
       return;
     }
-
     toPng(printRef.current, { cacheBust: true })
       .then((dataUrl) => {
-        const link = document.createElement("a");
-        link.download = "my-image-name.png";
-        link.href = dataUrl;
-        link.click();
+        saveAs(dataUrl, `${saveYear}-${modifier.parameter}.png`);
       })
       .catch((err) => {
         console.log(err);
@@ -172,14 +169,16 @@ const Statistic = (props: { modifier: IModifier }) => {
             </TableHead>
             <TableBody>
               {sortedCurrentCountriesData.map((countryData, index) => {
-                <StatisticRow
-                  key={countryData.tag}
-                  countryData={countryData}
-                  index={index}
-                  modifier={modifier}
-                  sortedLastCountriesData={sortedLastCountriesData}
-                  isTop={isCountryTop(sortedCurrentCountriesData, index, modifier.parameter)}
-                />;
+                return (
+                  <StatisticRow
+                    key={countryData.tag}
+                    countryData={countryData}
+                    index={index}
+                    modifier={modifier}
+                    sortedLastCountriesData={sortedLastCountriesData}
+                    isTop={isCountryTop(sortedCurrentCountriesData, index, modifier.parameter)}
+                  />
+                );
               })}
             </TableBody>
           </Table>
