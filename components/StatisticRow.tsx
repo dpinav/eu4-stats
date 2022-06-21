@@ -7,6 +7,7 @@ import ArrowDropUpRoundedIcon from "@mui/icons-material/ArrowDropUpRounded";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import ArrowRightRoundedIcon from "@mui/icons-material/ArrowRightRounded";
 import { green, blue, red } from "@mui/material/colors";
+import theme from "./theme";
 
 const StyledTableCell = styled(TableCell)(({ theme }: any) => ({
   [`&.${tableCellClasses.body}`]: {
@@ -33,8 +34,9 @@ const StatisticRow = (props: {
   index: number;
   modifier: IModifier;
   sortedLastCountriesData: ICountryData[];
+  isTop: boolean;
 }) => {
-  const { countryData, index, modifier, sortedLastCountriesData } = props;
+  const { countryData, index, modifier, sortedLastCountriesData, isTop } = props;
 
   const lastIndex: number = sortedLastCountriesData.findIndex(
     (e: ICountryData) =>
@@ -51,7 +53,19 @@ const StatisticRow = (props: {
   const change: number = value - lastValue;
   const percentage: number = (change / lastValue) * 100;
   return (
-    <StyledTableRow key={countryData.tag}>
+    <StyledTableRow
+      key={countryData.tag}
+      sx={[
+        isTop && {
+          "&:nth-of-type(odd)": {
+            backgroundColor: red[900],
+          },
+          "&:nth-of-type(even)": {
+            backgroundColor: red[700],
+          },
+        },
+      ]}
+    >
       <StyledTableCell sx={{ paddingLeft: 2 }}>{index + 1}</StyledTableCell>
       <StyledTableCell align="center">{getTendencyIcon(index, lastIndex)}</StyledTableCell>
       <StyledTableCell component="th" scope="row">

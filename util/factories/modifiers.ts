@@ -11,9 +11,5 @@ export const getModifiers: Function = (): IModifier[] => [
   { parameter: "total_casualties", name: "Bajas totales sufridas" },
   { parameter: "totalManaGainAverage", name: "Ganancia media de mana" },
   { parameter: "ideas", name: "Ideas" },
-  { parameter: "max_manpower", name: "Manpower máximo" },
-  { parameter: "FL", name: "Forcelimit" },
-  { parameter: "qualityScore", name: "Calidad" },
-  { parameter: "manpower_recovery", name: "Recuperación de manpower" },
-  { parameter: "monthly_income", name: "Ingresos mensuales" },
+  { parameter: "tops", name: "Países TOP" },
 ];

@@ -13,4 +13,5 @@ export default interface ICountryData {
   total_casualties: number;
   totalManaGainAverage: number;
   ideas: number;
+  tops: number;
 }

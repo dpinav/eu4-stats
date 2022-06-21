@@ -49,5 +49,6 @@ export function getQueryParamsModifiers(): string {
     params += `${modifier.parameter};`;
   });
   params += "player;tag;";
+  params += "max_manpower;FL;qualityScore;manpower_recovery;monthly_income;"; // Tops stats parameters
   return params;
 }

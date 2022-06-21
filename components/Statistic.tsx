@@ -171,15 +171,16 @@ const Statistic = (props: { modifier: IModifier }) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {sortedCurrentCountriesData.map((countryData, index) => (
+              {sortedCurrentCountriesData.map((countryData, index) => {
                 <StatisticRow
                   key={countryData.tag}
                   countryData={countryData}
                   index={index}
                   modifier={modifier}
                   sortedLastCountriesData={sortedLastCountriesData}
-                ></StatisticRow>
-              ))}
+                  isTop={isCountryTop(sortedCurrentCountriesData, index, modifier.parameter)}
+                />;
+              })}
             </TableBody>
           </Table>
         </TableContainer>
@@ -190,3 +191,15 @@ const Statistic = (props: { modifier: IModifier }) => {
 };
 
 export default Statistic;
+
+const isCountryTop = (
+  sortedCurrentCountriesData: ICountryData[],
+  index: number,
+  modParam: string
+): boolean => {
+  if (modParam !== "tops") return false;
+  const numPlayers: number = sortedCurrentCountriesData.length;
+  const percentageTop: number = 0.3; // 30% of Countries are Top
+  const topCountries: number = Math.ceil(numPlayers * percentageTop);
+  return index < topCountries;
+};
