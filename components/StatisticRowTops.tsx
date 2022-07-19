@@ -1,3 +1,5 @@
+/* ROWS TO BE USED IN THE TOP COUNTRIES STATISTIC */
+
 import * as React from "react";
 import { Card, CardMedia, TableCell, tableCellClasses, TableRow, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
@@ -7,7 +9,6 @@ import ArrowDropUpRoundedIcon from "@mui/icons-material/ArrowDropUpRounded";
 import ArrowDropDownRoundedIcon from "@mui/icons-material/ArrowDropDownRounded";
 import ArrowRightRoundedIcon from "@mui/icons-material/ArrowRightRounded";
 import { green, blue, red } from "@mui/material/colors";
-import theme from "./theme";
 
 const StyledTableCell = styled(TableCell)(({ theme }: any) => ({
   [`&.${tableCellClasses.body}`]: {
@@ -29,7 +30,15 @@ const TypographyCell = styled(Typography)(({ theme }: any) => ({
   fontWeight: "bold",
 }));
 
-const StatisticRow = (props: {
+type TopsModifiers = {
+  forcelimit: number;
+  max_manpower: number;
+  manpower_recovery: number;
+  quality: number;
+  monthly_income: number;
+};
+
+const StatisticRowTops = (props: {
   countryData: ICountryData;
   index: number;
   modifier: IModifier;
@@ -42,30 +51,54 @@ const StatisticRow = (props: {
     (e: ICountryData) =>
       e.tag === countryData.tag || (e.player !== "undefined..." && e.player == countryData.player)
   );
-  const value: number = countryData[modifier.parameter as keyof ICountryData] as number;
+
+  const currentMods: TopsModifiers = {
+    forcelimit: parseInt(countryData["FL" as keyof ICountryData] as string),
+    max_manpower: parseInt(countryData["max_manpower" as keyof ICountryData] as string),
+    manpower_recovery: parseInt(countryData["manpower_recovery" as keyof ICountryData] as string),
+    quality: parseInt(countryData["qualityScore" as keyof ICountryData] as string),
+    monthly_income: parseInt(countryData["monthly_income" as keyof ICountryData] as string),
+  };
+
+  const value: number =
+    (currentMods.forcelimit +
+      currentMods.max_manpower / 1000 +
+      (currentMods.manpower_recovery / 1000) * 120) *
+      ((currentMods.quality / 100) ^ 2) *
+      0.8 +
+    currentMods.monthly_income * 0.2;
   let lastValue: number = value;
   if (lastIndex >= 0) {
-    lastValue = sortedLastCountriesData[lastIndex][
-      modifier.parameter as keyof ICountryData
-    ] as number;
+    const lastMods: TopsModifiers = {
+      forcelimit: parseInt(
+        sortedLastCountriesData[lastIndex]["FL" as keyof ICountryData] as string
+      ),
+      max_manpower: parseInt(
+        sortedLastCountriesData[lastIndex]["max_manpower" as keyof ICountryData] as string
+      ),
+      manpower_recovery: parseInt(
+        sortedLastCountriesData[lastIndex]["manpower_recovery" as keyof ICountryData] as string
+      ),
+      quality: parseInt(
+        sortedLastCountriesData[lastIndex]["qualityScore" as keyof ICountryData] as string
+      ),
+      monthly_income: parseInt(
+        sortedLastCountriesData[lastIndex]["monthly_income" as keyof ICountryData] as string
+      ),
+    };
+    lastValue =
+      (lastMods.forcelimit +
+        lastMods.max_manpower / 1000 +
+        (lastMods.manpower_recovery / 1000) * 120) *
+        ((lastMods.quality / 100) ^ 2) *
+        0.8 +
+      lastMods.monthly_income * 0.2;
   }
   if (lastValue === 0) lastValue = value;
   const change: number = value - lastValue;
   const percentage: number = (change / lastValue) * 100;
   return (
-    <StyledTableRow
-      key={countryData.tag}
-      sx={[
-        isTop && {
-          "&:nth-of-type(odd)": {
-            backgroundColor: red[900],
-          },
-          "&:nth-of-type(even)": {
-            backgroundColor: red[700],
-          },
-        },
-      ]}
-    >
+    <StyledTableRow key={countryData.tag}>
       <StyledTableCell sx={{ paddingLeft: 2 }}>{index + 1}</StyledTableCell>
       <StyledTableCell align="center">{getTendencyIcon(index, lastIndex)}</StyledTableCell>
       <StyledTableCell component="th" scope="row">
@@ -96,18 +129,12 @@ const StatisticRow = (props: {
         <TypographyCell>{countryData.player}</TypographyCell>
       </StyledTableCell>
       <StyledTableCell align="center">
-        <TypographyCell>
-          {isFloat(value)
-            ? parseFloat(value.toString()).toLocaleString("en-US") ?? 0
-            : parseInt(value.toString()).toLocaleString("en-US")}
-        </TypographyCell>
+        <TypographyCell>{value ?? 0}</TypographyCell>
       </StyledTableCell>
       <StyledTableCell align="center">
         <Typography>
           {change >= 0 ? "+" : ""}
-          {isFloat(change)
-            ? parseFloat(change.toFixed(2)).toLocaleString("en-US")
-            : parseInt(change.toString()).toLocaleString("en-US")}
+          {isFloat(change) ? change.toFixed(2) : change}
         </Typography>
       </StyledTableCell>
       <StyledTableCell
@@ -118,10 +145,10 @@ const StatisticRow = (props: {
       >
         <TypographyCell>
           {percentage > 0
-            ? "+" + parseFloat(percentage.toFixed(0)).toLocaleString("en-US")
+            ? "+" + percentage.toFixed(0)
             : percentage === Infinity
             ? "0"
-            : parseFloat(percentage.toFixed(0)).toLocaleString("en-US")}
+            : percentage.toFixed(0)}
           {"%"}
         </TypographyCell>
       </StyledTableCell>
@@ -129,7 +156,7 @@ const StatisticRow = (props: {
   );
 };
 
-export default StatisticRow;
+export default StatisticRowTops;
 
 function getTendencyIcon(currentIndex: number, lastIndex: number) {
   if (currentIndex === lastIndex || lastIndex < 0) {
