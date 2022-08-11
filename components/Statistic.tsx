@@ -48,24 +48,6 @@ const Statistic = (props: { modifier: IModifier }) => {
   const [saveYear, setSaveYear] = useLocalStorage("save_year", "1444");
   const [selectedLogo, setSelectedLogo] = useLocalStorage("selected_logo", "logoEstrategas.png");
 
-  const value = currentCountriesData[modifier.parameter as keyof ICountryData];
-  if (value) {
-    if (isNaN(value)) {
-      currentCountriesData[modifier.parameter as keyof ICountryData] = 0;
-    }
-  } else {
-    currentCountriesData[modifier.parameter as keyof ICountryData] = 0;
-  }
-
-  const lastValue = lastCountriesData[modifier.parameter as keyof ICountryData];
-  if (lastValue) {
-    if (isNaN(lastValue)) {
-      lastCountriesData[modifier.parameter as keyof ICountryData] = 0;
-    }
-  } else {
-    lastCountriesData[modifier.parameter as keyof ICountryData] = 0;
-  }
-
   const sortedCurrentCountriesData = [
     ...currentCountriesData.sort((a: ICountryData, b: ICountryData) => {
       return (
