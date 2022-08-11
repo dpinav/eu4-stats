@@ -42,16 +42,17 @@ const StatisticRow = (props: {
     (e: ICountryData) =>
       e.tag === countryData.tag || (e.player !== "undefined..." && e.player == countryData.player)
   );
-  const value: number = countryData[modifier.parameter as keyof ICountryData] as number;
+  let value: number = countryData[modifier.parameter as keyof ICountryData] as number;
   let lastValue: number = value;
   if (lastIndex >= 0) {
     lastValue = sortedLastCountriesData[lastIndex][
       modifier.parameter as keyof ICountryData
     ] as number;
   }
-  if (lastValue === 0) lastValue = value;
-  const change: number = value - lastValue;
-  const percentage: number = (change / lastValue) * 100;
+  if (lastValue === 0 || isNaN(lastValue)) lastValue = value;
+  let change: number = value - lastValue;
+  let percentage: number = (change / lastValue) * 100;
+
   return (
     <StyledTableRow
       key={countryData.tag}
@@ -97,7 +98,9 @@ const StatisticRow = (props: {
       </StyledTableCell>
       <StyledTableCell align="center">
         <TypographyCell>
-          {isFloat(value)
+          {!value
+            ? 0
+            : isFloat(value)
             ? parseFloat(value.toString()).toLocaleString("en-US") ?? 0
             : parseInt(value.toString()).toLocaleString("en-US")}
         </TypographyCell>
