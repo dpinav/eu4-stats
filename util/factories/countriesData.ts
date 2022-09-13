@@ -1,5 +1,7 @@
 import ICountryData from "../interfaces/ICountryData";
 import { fetchData } from "../api";
+import { getModifiers } from "./modifiers";
+import IModifier from "../interfaces/IModifier";
 
 export default async function createCountriesData(
   rawCountriesData: any[],
@@ -23,18 +25,15 @@ async function initCountryData(
   save: string,
   getFlagsAndNames: boolean
 ) {
-  const countryData: ICountryData = {
+  let countryData: ICountryData = {
     ...rawCountryData,
     player:
       rawCountryData.player?.length < 20
         ? rawCountryData.player
         : rawCountryData.player?.slice(0, 17) + "...",
-    spent_total: parseInt(rawCountryData.spent_total),
-    innovativeness: parseFloat(rawCountryData.innovativeness).toFixed(2),
-    army_professionalism: (parseFloat(rawCountryData.army_professionalism) * 100).toFixed(2),
-    totalManaGainAverage: parseFloat(rawCountryData.totalManaGainAverage).toFixed(2),
-    ideas: calculateIdeas(rawCountryData).toFixed(0),
-    tops: getTopValue(rawCountryData).toFixed(0),
+    army_professionalism: parseFloat(rawCountryData.army_professionalism) * 100,
+    ideas: calculateIdeas(rawCountryData),
+    tops: getTopValue(rawCountryData).toFixed(),
   };
   if (getFlagsAndNames) {
     countryData.name = await fetchData(
@@ -47,6 +46,16 @@ async function initCountryData(
     countryData.name = "noname";
     countryData.flag = "noflag";
   }
+
+  const modifiers: IModifier[] = getModifiers();
+  modifiers.forEach((modifier: IModifier) => {
+    const value: number | string = countryData[modifier.parameter as keyof ICountryData];
+    !value
+      ? ((countryData[modifier.parameter as keyof ICountryData] as number) = 0)
+      : ((countryData[modifier.parameter as keyof ICountryData] as number) = parseFloat(
+          value as string
+        ));
+  });
 
   return countryData;
 }

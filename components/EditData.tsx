@@ -8,9 +8,11 @@ import { CountriesDataContext } from "../pages/stats";
 
 const EditData = (props: { isEditing: boolean; setIsEditing: (isEditing: boolean) => any }) => {
   const { isEditing, setIsEditing } = props;
-  const [currentCountriesData, setCurrentCountriesData] = React.useContext(CountriesDataContext);
+  const [currentCountriesData, setCurrentCountriesData, lastCountriesData, setLastCountriesData] =
+    React.useContext(CountriesDataContext);
 
   const [editableCountriesData, setEditableCountriesData] = React.useState<ICountryData[]>([]);
+  const [removedCountryTags, setRemovedCountryTags] = React.useState<string[]>([]);
 
   React.useEffect(() => {
     setEditableCountriesData([...currentCountriesData]);
@@ -26,12 +28,18 @@ const EditData = (props: { isEditing: boolean; setIsEditing: (isEditing: boolean
   };
 
   const handleRemoveCountry = (index: number) => {
+    setRemovedCountryTags([...removedCountryTags, editableCountriesData[index].tag]);
     editableCountriesData.splice(index, 1);
     setEditableCountriesData([...editableCountriesData]);
   };
 
   const handleSave = () => {
     setCurrentCountriesData([...editableCountriesData]);
+    setLastCountriesData([
+      ...lastCountriesData.filter(
+        (country: ICountryData) => !removedCountryTags.includes(country.tag)
+      ),
+    ]);
     setIsEditing(false);
   };
 

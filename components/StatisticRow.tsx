@@ -98,7 +98,7 @@ const StatisticRow = (props: {
       <StyledTableCell align="center">
         <TypographyCell>
           {isFloat(value)
-            ? parseFloat(value.toString()).toLocaleString("en-US") ?? 0
+            ? parseFloat(value.toFixed(2)).toLocaleString("en-US") ?? 0
             : parseInt(value.toString()).toLocaleString("en-US")}
         </TypographyCell>
       </StyledTableCell>
@@ -119,9 +119,9 @@ const StatisticRow = (props: {
         <TypographyCell>
           {percentage > 0
             ? "+" + parseFloat(percentage.toFixed(0)).toLocaleString("en-US")
-            : percentage === Infinity
-            ? "0"
-            : parseFloat(percentage.toFixed(0)).toLocaleString("en-US")}
+            : !isNaN(percentage) && percentage !== Infinity
+            ? parseFloat(percentage.toFixed(0)).toLocaleString("en-US")
+            : "0"}
           {"%"}
         </TypographyCell>
       </StyledTableCell>
