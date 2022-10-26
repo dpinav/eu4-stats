@@ -7,10 +7,7 @@ import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { useLocalStorage } from "../util/hooks/useLocalStorage";
 
 const LogoSelect = () => {
-  const [selectedLogo, setSelectedLogo] = useLocalStorage(
-    "selected_logo",
-    "logoEstrategas.png"
-  );
+  const [selectedLogo, setSelectedLogo] = useLocalStorage("selected_logo", "logoEstrategas.png");
 
   return (
     <FormControl sx={{ m: 1, minWidth: 80 }}>
@@ -25,6 +22,7 @@ const LogoSelect = () => {
       >
         <MenuItem value="logoEstrategas.png">Estrategas</MenuItem>
         <MenuItem value="logoFC.png">FC</MenuItem>
+        <MenuItem value="logoFC2.png">FC XI</MenuItem>
       </Select>
       <FormHelperText>{"Select Logo"}</FormHelperText>
     </FormControl>
