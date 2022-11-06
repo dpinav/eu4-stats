@@ -1,4 +1,4 @@
-# Europa Universalis IV MP Stats
+# Europa Universalis IV MP Statistics Tool
 
 ![Main Stats page](https://i.imgur.com/Rjt0aXF.png)
 
