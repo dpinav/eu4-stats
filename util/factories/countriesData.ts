@@ -39,9 +39,9 @@ async function initCountryData(
     countryData.name = await fetchData(
       `/api/countryName/${countryData.tag}?apiKey=${apiKey}&save=${save}`
     );
-    countryData.flag = await fetchData(
+    countryData.flag = rawCountryData.tag + ".png"; /*await fetchData(
       `/api/countryFlag/${countryData.tag}?apiKey=${apiKey}&save=${save}`
-    );
+    );*/
   } else {
     countryData.name = "noname";
     countryData.flag = "noflag";
