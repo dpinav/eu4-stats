@@ -119,8 +119,8 @@ const StatisticRowTops = (props: {
               width: 24,
               height: 20,
             }}
-            image={"/images/flags/" + countryData.flag}
-            alt={countryData.flag}
+            src={"/images/flags/" + countryData.flag}
+            alt="Flag"
           />
           <Typography>{countryData.name}</Typography>
         </Card>

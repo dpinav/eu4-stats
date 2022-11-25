@@ -87,7 +87,7 @@ const StatisticRow = (props: {
               height: 20,
             }}
             src={"/images/flags/" + countryData.flag}
-            alt={countryData.flag}
+            alt="Flag"
           />
           <Typography>{countryData.name}</Typography>
         </Card>
