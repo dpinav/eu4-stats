@@ -65,7 +65,7 @@ const Stats: NextPage = () => {
         const dataUrl: Blob = (await toBlob(element as HTMLElement, {
           cacheBust: true,
         }))!;
-        zip.file(`${currentSave} ${modifiers[index].name}.png`, dataUrl);
+        zip.file(`${index}-${currentSave}-${modifiers[index].name}.png`, dataUrl);
         index++;
       }
     }
