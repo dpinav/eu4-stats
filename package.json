@@ -20,7 +20,7 @@
     "file-saver": "^2.0.5",
     "html-to-image": "latest",
     "image-downloader": "latest",
-    "jszip": "^3.10.0",
+    "jszip": "^3.10.1",
     "next": "latest",
     "react": "latest",
     "react-dom": "latest",
