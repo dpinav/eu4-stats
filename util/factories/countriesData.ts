@@ -35,6 +35,7 @@ async function initCountryData(
     ideas: calculateIdeas(rawCountryData),
     tops: getTopValue(rawCountryData).toFixed(),
   };
+
   if (getFlagsAndNames) {
     countryData.name = await fetchData(
       `/api/countryName/${countryData.tag}?apiKey=${apiKey}&save=${save}`
@@ -44,7 +45,7 @@ async function initCountryData(
     );*/
   } else {
     countryData.name = "noname";
-    countryData.flag = "noflag";
+    countryData.flag = "NOFLAG.png";
   }
 
   const modifiers: IModifier[] = getModifiers();
