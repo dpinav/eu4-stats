@@ -34,6 +34,9 @@ async function initCountryData(
     army_professionalism: parseFloat(rawCountryData.army_professionalism) * 100,
     ideas: calculateIdeas(rawCountryData),
     tops: getTopValue(rawCountryData).toFixed(),
+    technology: getTechnologyMedian(rawCountryData),
+    ideasCsv: getCsvIdeas(rawCountryData.ideas),
+    technologyCsv: getCsvTechs(rawCountryData.technology),
   };
 
   if (getFlagsAndNames) {
@@ -85,3 +88,28 @@ const getTopValue = (rawCountryData: any): number => {
     monthly_income * 0.2;
   return value;
 };
+
+function getTechnologyMedian(rawCountryData: any) {
+  const techs = Object.values(rawCountryData.technology);
+  let sum = 0;
+  for (let i = 0; i < techs.length; i++) {
+    sum += parseInt(techs[i] as string);
+  }
+  return sum / techs.length;
+}
+function getCsvIdeas(ideas: any): string {
+  let csv = "";
+  const ideaKeys = Object.keys(ideas);
+  for (let i = 1; i < 9; ++i) {
+    if (ideaKeys[i]) {
+      csv += ideaKeys[i] + ".png;";
+    } else {
+      csv += "noidea.png;";
+    }
+  }
+
+  return csv;
+}
+function getCsvTechs(technology: any): string {
+  return technology ? `${technology.adm};${technology.dip};${technology.mil}` : ";;";
+}

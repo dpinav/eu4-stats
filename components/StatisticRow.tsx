@@ -35,6 +35,7 @@ const StatisticRow = (props: {
   modifier: IModifier;
   sortedLastCountriesData: ICountryData[];
   isTop: boolean;
+  addNewCountryToCsv: any;
 }) => {
   const { countryData, index, modifier, sortedLastCountriesData, isTop } = props;
 
@@ -52,6 +53,21 @@ const StatisticRow = (props: {
   if (lastValue === 0) lastValue = value;
   const change: number = value - lastValue;
   const percentage: number = (change / lastValue) * 100;
+
+  React.useEffect(() => {
+    if (modifier.parameter === "tops") {
+      parseCsvData(
+        countryData,
+        index,
+        lastIndex,
+        value,
+        change,
+        percentage,
+        props.addNewCountryToCsv
+      );
+    }
+  }, [index]);
+
   return (
     <StyledTableRow
       key={countryData.tag}
@@ -170,4 +186,57 @@ function getPercentageColor(percentage: number) {
 function isFloat(n: number) {
   return !isNaN(n) && n.toString().indexOf(".") != -1;
   //return Number(n) === n && n % 1 !== 0;
+}
+
+function parseCsvData(
+  countryData: ICountryData,
+  index: number,
+  lastIndex: number,
+  value: number,
+  change: number,
+  percentage: number,
+  addNewCountryToCsv: any
+): void {
+  let position: string = (index + 1).toString();
+  let positionChange: string;
+  let playerName: string = countryData.player;
+  let countryName: string = countryData.name;
+  let flagPath: string = countryData.tag + ".png";
+  let topScore: string = parseInt(value.toString()).toLocaleString("en-US");
+  let changeUp: boolean = change >= 0;
+  let changeDown: boolean = change < 0;
+  let changeN: string = parseInt(change.toString()).toLocaleString("en-US");
+  let changeP: string =
+    percentage > 0
+      ? "+" + parseFloat(percentage.toFixed(0)).toLocaleString("en-US")
+      : !isNaN(percentage) && percentage !== Infinity
+      ? parseFloat(percentage.toFixed(0)).toLocaleString("en-US")
+      : "0";
+  let ideas: string = countryData.ideasCsv;
+  let technology: string = countryData.technologyCsv;
+
+  if (index === lastIndex || lastIndex < 0) {
+    positionChange = "blue.png";
+  } else if (index < lastIndex) {
+    positionChange = "green.png";
+  } else {
+    positionChange = "red.png";
+  }
+
+  changeP += "%";
+
+  addNewCountryToCsv(
+    position,
+    positionChange,
+    playerName,
+    countryName,
+    flagPath,
+    topScore,
+    changeUp,
+    changeDown,
+    changeN,
+    changeP,
+    ideas,
+    technology
+  );
 }

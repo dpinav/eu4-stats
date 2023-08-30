@@ -66,6 +66,31 @@ const Statistic = (props: { modifier: IModifier }) => {
   ];
   const printRef = React.useRef<HTMLDivElement>(null);
 
+  const [topCsvString, setTopCsvString] = React.useState<string>("");
+  let topCsvStringAux: string =
+    "Pos;PosChange;Player;Country;Flag;Score;ChangeUp;ChangeDown;ChangeN;ChangeP;Idea1;Idea2;Idea3;Idea4;Idea5;Idea6;Idea7;Idea8;Adm;Dip;Mil\n";
+  const addNewCountryToCsv = (
+    position: string,
+    positionChange: string,
+    playerName: string,
+    countryName: string,
+    flagPath: string,
+    topScore: string,
+    changeUp: boolean,
+    changeDown: boolean,
+    changeN: string,
+    changeP: string,
+    ideas: string,
+    technology: string
+  ): void => {
+    console.log("Entered addNewCountryToCsv");
+    topCsvStringAux +=
+      `${position};${positionChange};${playerName};${countryName};${flagPath};` +
+      `${topScore};${changeUp};${changeDown};${changeN};${changeP};` +
+      `${ideas}${technology} \n`;
+    setTopCsvString(topCsvStringAux);
+  };
+
   const onButtonClick = React.useCallback(() => {
     if (printRef.current === null) {
       return;
@@ -78,6 +103,10 @@ const Statistic = (props: { modifier: IModifier }) => {
         console.log(err);
       });
   }, [printRef]);
+
+  const handleDownloadCsv = () => {
+    saveAs(new Blob([topCsvString]), `${saveYear}-${modifier.parameter}.csv`);
+  };
 
   return (
     <>
@@ -111,7 +140,7 @@ const Statistic = (props: { modifier: IModifier }) => {
                 fontFamily={"Trajan Pro"}
                 fontWeight={"bold"}
                 sx={{
-                  color: orange[300],
+                  color: "#ff0072",
                   textShadow: "1.5px 1.5px 1.5px black",
                 }}
               >
@@ -127,7 +156,7 @@ const Statistic = (props: { modifier: IModifier }) => {
                 fontStyle={"italic"}
                 fontWeight={"bold"}
                 sx={{
-                  color: orange[300],
+                  color: "#ff0072",
                   textAlign: "left",
                   textShadow: "1.5px 1.5px 1.5px black",
                 }}
@@ -177,6 +206,7 @@ const Statistic = (props: { modifier: IModifier }) => {
                     modifier={modifier}
                     sortedLastCountriesData={sortedLastCountriesData}
                     isTop={isCountryTop(sortedCurrentCountriesData, index, modifier.parameter)}
+                    addNewCountryToCsv={addNewCountryToCsv}
                   />
                 );
               })}
@@ -185,6 +215,7 @@ const Statistic = (props: { modifier: IModifier }) => {
         </TableContainer>
       </StatCard>
       <button onClick={onButtonClick}>Download</button>
+      {modifier.parameter == "tops" && <button onClick={handleDownloadCsv}>Download CSV</button>}
     </>
   );
 };
