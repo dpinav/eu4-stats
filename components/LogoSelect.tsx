@@ -22,7 +22,7 @@ const LogoSelect = () => {
       >
         <MenuItem value="logoEstrategas.png">Estrategas</MenuItem>
         <MenuItem value="logoFC.png">FC</MenuItem>
-        <MenuItem value="logoFC2.png">FC XI</MenuItem>
+        <MenuItem value="logoFC12.png">FC XII</MenuItem>
       </Select>
       <FormHelperText>{"Select Logo"}</FormHelperText>
     </FormControl>

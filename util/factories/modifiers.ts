@@ -20,5 +20,6 @@ export const getModifiers: Function = (): IModifier[] => [
   { parameter: "totalManaGainAverage", name: "Ganancia media de mana" },
   { parameter: "average_monarch_total", name: "Media mana gobernantes" },
   { parameter: "ideas", name: "Ideas" },
+  { parameter: "technology", name: "Tecnología (Media)" },
   { parameter: "tops", name: "Países TOP" },
 ];
