@@ -202,13 +202,13 @@ function parseCsvData(
   let playerName: string = countryData.player;
   let countryName: string = countryData.name;
   let flagPath: string = countryData.tag + ".png";
-  let topScore: string =
-    value > 0
-      ? "+" + parseInt(value.toString()).toLocaleString("en-US")
-      : parseInt(value.toString()).toLocaleString("en-US");
+  let topScore: string = parseInt(value.toString()).toLocaleString("en-US");
   let changeUp: boolean = change >= 0;
   let changeDown: boolean = change < 0;
-  let changeN: string = parseInt(change.toString()).toLocaleString("en-US");
+  let changeN: string =
+    change > 0
+      ? "+" + parseInt(change.toString()).toLocaleString("en-US")
+      : parseInt(change.toString()).toLocaleString("en-US");
   let changeP: string =
     percentage > 0
       ? "+" + parseFloat(percentage.toFixed(0)).toLocaleString("en-US")
